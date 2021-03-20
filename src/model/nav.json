@@ -1,0 +1,69 @@
+{
+    "business-nav-list": [
+        {
+            "name": "我的产品",
+            "has-children": false,
+            "route": {
+                "path": "/my-product"
+            }
+        },
+        {
+            "name": "提交订单",
+            "has-children": true,
+            "children": [
+                {
+                    "name": "提交销售订单",
+                    "route": {
+                        "path": "/submit-sales-order"
+                    }
+                },
+                {
+                    "name": "提交进货订单",
+                    "route": {
+                        "path": "/submit-purchasing-order"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "我的订单",
+            "has-children": false,
+            "route": {
+                "path": "/my-order"
+            }
+        }
+    ],
+    "admin-nav-list": [
+        {
+            "name": "查询订单",
+            "has-children": false,
+            "route": {
+                "path": "/query-order"
+            },
+            "access-roles": [
+                "ROLE_ADMIN_FUND",
+                "ROLE_ADMIN_QUALITY"
+            ]
+        },
+        {
+            "name": "统计价格",
+            "has-children": false,
+            "route": {
+                "path": "/price-statics"
+            },
+            "access-roles": [
+                "ROLE_ADMIN_FUND"
+            ]
+        },
+        {
+            "name": "追溯产品",
+            "has-children": false,
+            "route": {
+                "path": "/product-trace"
+            },
+            "access-roles": [
+                "ROLE_ADMIN_QUALITY"
+            ]
+        }
+    ]
+}

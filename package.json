@@ -18,7 +18,12 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "vue-router": "^3.5.1",
+    "element-ui": "^2.15.1",
+    "axios": "^0.21.1",
+    "ant-design-vue": "^1.7.4",
+    "qs": "^6.10.0"
   },
   "eslintConfig": {
     "root": true,
