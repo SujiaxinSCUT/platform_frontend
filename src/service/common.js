@@ -1,10 +1,9 @@
-import {post, HOST} from "@/utils/http"
+import {post} from "@/utils/http"
 import qs from 'querystring'
-
-const API = 'oauth/token'
+import {GET_USER_DETAILS, LOGIN} from "@/utils/url";
 
 export async function login(username, password, isUser) {
-    const url = HOST + API
+    const url = LOGIN
     const data = {
         username: username,
         password: password,
@@ -14,4 +13,9 @@ export async function login(username, password, isUser) {
         client_secret: 'platform'
     }
     return post(url, qs.stringify(data))
+}
+
+export async function getUserDetails(username) {
+    const url = GET_USER_DETAILS + '/' + username
+    return post(url)
 }

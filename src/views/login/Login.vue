@@ -27,9 +27,11 @@
 
 <script>
 import Logo from '../../assets/login_logo.png'
-import {login} from "@/service/login"
+import {login} from "@/service/common"
 import {message} from "ant-design-vue"
 import {HTTP} from "@/utils/http";
+import {router} from "@/router/router";
+
 export default {
     name: 'login',
     data() {
@@ -72,6 +74,12 @@ export default {
             await login(username, password, isUser).then(res => {
                 if (res.status === HTTP.OK) {
                     //TODO
+
+                    if (isUser) {
+                        router.push({path: '/business'})
+                    } else {
+                        router.push({path: '/admin'})
+                    }
                 }
             }).catch(err => {
                 const res = err.response

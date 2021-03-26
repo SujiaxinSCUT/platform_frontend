@@ -1,7 +1,7 @@
 import axios from "axios";
+import {ExpiresStorage} from "@/model/ExpireStorage";
 
-export const ACCESS_TOKEN = 'access_token'
-export const REFRESH_TOKEN = 'refresh_token'
+export const userDetailsStorage = new ExpiresStorage("user_details")
 
 const service = axios.create({
     timeout:5000,
@@ -9,8 +9,9 @@ const service = axios.create({
 
 service.interceptors.request.use(
     config => {
-        if (localStorage.getItem(ACCESS_TOKEN)) {
-            config.headers['Authorization'] = `Bearer ${localStorage.getItem(ACCESS_TOKEN)}` || ''
+        let userDetails = userDetailsStorage.get()
+        if (userDetails) {
+            config.headers['Authorization'] = `Bearer ${userDetails['access_token']}` || ''
         }
         return config
     },

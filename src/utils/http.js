@@ -1,7 +1,5 @@
 import request from './request'
 
-export const HOST = 'http://localhost:81/'
-
 export const HTTP = {
     OK: 200,
     BAD_CLIENT: 400,
