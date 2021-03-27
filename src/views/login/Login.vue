@@ -1,15 +1,17 @@
 <template>
     <div id="login" style="width: 100%; height: 100%;">
         <el-card class="box-card">
-            <el-form ref="ruleForm" :rules="rules" :model="ruleForm" label-position="left" label-width="50px" :hide-required-asterisk=true>
+            <el-form ref="ruleForm" :rules="rules" :model="ruleForm"
+                     label-position="left" label-width="50px"
+                     :hide-required-asterisk=true>
                 <el-image :src="logoImg" style="left: 20%;margin-bottom: 20px"></el-image>
                 <el-form-item label="账号" style="margin-right: 20px;"
                               prop="username">
-                    <el-input auto-complete="off" v-model="ruleForm.username"></el-input>
+                    <el-input auto-complete="off" v-model="ruleForm.username" :disabled="loading"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" style="margin-right: 20px;"
                               prop="password" >
-                    <el-input type="password" auto-complete="off" v-model="ruleForm.password"></el-input>
+                    <el-input type="password" auto-complete="off" v-model="ruleForm.password" :disabled="loading"></el-input>
                 </el-form-item>
                 <div style="align-content: center; margin-bottom: 20px;">
                     <el-radio-group v-model="radio">
@@ -27,10 +29,10 @@
 
 <script>
 import Logo from '../../assets/login_logo.png'
-import {login} from "@/service/common"
 import {message} from "ant-design-vue"
-import {HTTP} from "@/utils/http";
-import {router} from "@/router/router";
+import {userDetailsStorage} from "@/utils/request";
+import {login, getUserDetails} from "@/service/common";
+import {RESULT} from "@/utils/http";
 
 export default {
     name: 'login',
@@ -54,7 +56,7 @@ export default {
                     trigger: 'blur'
                 }],
             },
-            loading: false
+            loading: false,
         }
     },
     methods: {
@@ -70,26 +72,36 @@ export default {
         },
         async login(username, password, isUser) {
             this.loading = true
-            setTimeout(()=>{}, 3000)
-            await login(username, password, isUser).then(res => {
-                if (res.status === HTTP.OK) {
-                    //TODO
-
-                    if (isUser) {
-                        router.push({path: '/business'})
-                    } else {
-                        router.push({path: '/admin'})
-                    }
+            let res = await login(username, password, isUser)
+            if (res.code === RESULT.SUCCESS) {
+                let data = res.data
+                let userType = ''
+                if (isUser) {
+                    userType = 'business'
+                } else {
+                    userType = 'admin'
                 }
-            }).catch(err => {
-                const res = err.response
-                if (res.status === HTTP.BAD_CLIENT) {
-                    message.error("用户名或密码错误")
-                } else if (res.status === HTTP.BAD_SEVER) {
-                    message.error("服务器出错，请稍后再试")
-                }
-            })
+                data['user_type'] = userType
+                userDetailsStorage.set(data, data['expires_in'])
+                await this.getUserDetailsAndRedirect(username, userType)
+            } else {
+                message.error(res.message)
+            }
             this.loading = false
+        },
+        async getUserDetailsAndRedirect(username, userType) {
+            let res = await getUserDetails(username)
+            console.log(res)
+            if (res.code === RESULT.SUCCESS) {
+                if (userDetailsStorage.updateValue(res.data)) {
+
+                    this.$router.push({path: `/${userType}`})
+                } else {
+                    message.error("保存用户信息出错，请重新登录")
+                    this.$router.push({path: `/login`})
+                }
+            }
+
         }
     }
 }

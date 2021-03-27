@@ -16,7 +16,7 @@ export class ExpiresStorage {
         if (val) {
             let item = JSON.parse(val)
             if (item.startTime && item.expires) {
-                let time = new Date().getTime() - item.startTime
+                let time = (new Date().getTime() - item.startTime) / 1000
                 if (time <= item.expires) {
                     return item.value
                 } else {
@@ -26,6 +26,18 @@ export class ExpiresStorage {
             return null
         }
         return null
+    }
+    updateValue(value) {
+        let oldVal = this.get()
+        if (oldVal) {
+            let newVal = Object.assign(oldVal, value)
+            let item = JSON.parse(localStorage.getItem(this.key))
+            item.value = newVal
+            localStorage.setItem(this.key, JSON.stringify(item))
+            return true
+        } else {
+            return false
+        }
     }
 }
 

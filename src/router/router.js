@@ -8,7 +8,7 @@ import MyProduct from "@/views/business/MyProduct";
 
 
 const routes = [
-    {path: '/'},
+    {path: '/', meta: {requireAuth: true}},
     {path: '/login', component: Login},
     {
         path: '/business',
@@ -88,8 +88,8 @@ router.beforeEach((to, from, next) => {
                     })
                 }
             }
-            let path = to.path.toString().split('/')[0]
-            if (path !== userDetails['user_type']) {
+            let path = to.path.toString().split('/')[1]
+            if (!pathMatch(path, userDetails['user_type'])) {
                 next({
                     path: "/login"
                 })
@@ -108,6 +108,26 @@ router.beforeEach((to, from, next) => {
         next();
     }
 })
+
+function pathMatch(path, user_type) {
+    let business_path = [
+        'business',
+        'my-product',
+        'submit-sales-order',
+        'my-order'
+    ]
+    let admin_path = [
+        'admin',
+        'query-order',
+        'price-statics',
+        'product-trace'
+    ]
+    if ((user_type === 'business' && business_path.includes(path))
+        || (user_type === 'admin' && admin_path.includes(path))) {
+        return true
+    }
+    return false
+}
 
 
 export { router }

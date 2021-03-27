@@ -26,7 +26,7 @@ service.interceptors.response.use(
         return Promise.resolve(res)
     },
     error => {
-        return Promise.reject(error)
+        return Promise.resolve(error)
     }
 )
 
