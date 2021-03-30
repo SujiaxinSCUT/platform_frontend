@@ -91,7 +91,6 @@ export default {
         },
         async getUserDetailsAndRedirect(username, userType) {
             let res = await getUserDetails(username)
-            console.log(res)
             if (res.code === RESULT.SUCCESS) {
                 if (userDetailsStorage.updateValue(res.data)) {
 

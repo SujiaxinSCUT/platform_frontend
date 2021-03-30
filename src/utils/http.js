@@ -2,6 +2,7 @@ import request from './request'
 
 export const HTTP = {
     OK: 200,
+    CREATED: 201,
     BAD_CLIENT: 400,
     FORBIDDEN: 403,
     NOT_FOUND: 404,
