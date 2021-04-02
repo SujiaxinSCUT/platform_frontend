@@ -15,10 +15,16 @@
                 <label>{{form.unit}}</label>
             </el-form-item>
             <el-form-item prop="price" label="单价" required>
-                <el-input-number v-model="form.price" :precision="2" :min="0" :step="0.01" :disabled="loading" ></el-input-number>
+                <el-input-number v-model="form.price"
+                                 :precision="2" :min="0" :step="0.01" :disabled="loading"
+                                    :change="handlePriceChange">
+
+                </el-input-number>
             </el-form-item>
             <el-form-item prop="quantity" label="数量" required>
-                <el-input-number v-model="form.quantity" :precision="2" :min="0" :step="0.01" :disabled="loading" ></el-input-number>
+                <el-input-number v-model="form.quantity" :precision="2"
+                                 :min="0" :step="0.01" :disabled="loading"
+                                :change="handleQuantityChange"></el-input-number>
             </el-form-item>
         </el-form>
         <div slot="footer">
@@ -40,7 +46,7 @@ export default {
             if (!value) {
                 return callback(new Error("此项不能为空"))
             }
-            if (!Number.isInteger(value)) {
+            if (parseFloat(value).toString() === 'NaN') {
                 callback(new Error("请输入数字"))
             } else if (value <= 0){
                 callback(new Error("此项必须大于0"))
@@ -127,6 +133,12 @@ export default {
         clear() {
             this.$refs['form'].resetFields()
             this.currentProductId = 0
+        },
+        handlePriceChange(value) {
+            this.form.price = value
+        },
+        handleQuantityChange(value) {
+            this.form.quantity = value
         }
     }
 }

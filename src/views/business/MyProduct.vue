@@ -11,8 +11,51 @@
             </el-header>
             <el-divider></el-divider>
             <el-main>
-
+                <el-table
+                    :data="tableData"
+                    style="width: 100%;margin-top: -20px" height="320">
+                    <el-table-column
+                        prop="name"
+                        label="产品名称"
+                        width="100">
+                    </el-table-column>
+                    <el-table-column
+                        prop="unit"
+                        label="单位"
+                        width="100">
+                    </el-table-column>
+                    <el-table-column label="描述">
+                        <template slot-scope="scope">
+                            <el-button
+                                size="mini"
+                                @click="handleDesView(scope.$index, scope.row)" type="text">查看</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="sum"
+                        label="数量">
+                    </el-table-column>
+                    <el-table-column
+                        label="来源">
+                        <template slot-scope="scope">
+                            <el-button
+                                size="mini"
+                                @click="handleSourceView(scope.$index, scope.row)" type="text">查看</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </el-main>
+            <el-footer>
+                <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    :page-size="size"
+                    :total="totalElements"
+                    layout="total, prev, pager, next, jumper"
+                    >
+                </el-pagination>
+            </el-footer>
         </el-container>
 
         <submit-product :dialog-visible="submitProductDialogVisible" @close-dialog="closeSubmitProductDialog"/>
@@ -23,14 +66,23 @@
 <script>
 import SubmitProduct from "@/components/business/SubmitProduct";
 import AddProduct from "@/components/business/AddProduct";
+import {getProductsInStock} from "@/service/business";
+import {RESULT} from "@/utils/http";
+import {message} from "ant-design-vue"
+
+const PAGE_SIZE = 5
+
 export default {
     name: "MyProduct",
     components: {AddProduct, SubmitProduct},
     data() {
         return {
-
+            tableData: null,
             submitProductDialogVisible: false,
-            addProductDialogVisible: false
+            addProductDialogVisible: false,
+            size: PAGE_SIZE,
+            currentPage: 1,
+            totalElements: 0,
         }
     },
     methods: {
@@ -39,8 +91,36 @@ export default {
         },
         closeAddProductDialog() {
             this.addProductDialogVisible = false
-        }
-    }
+        },
+        handleCurrentChange(page) {
+            if (page !== this.currentPage) {
+                this.loadTableData(page - 1)
+            }
+        },
+        async loadTableData(page) {
+            const res = await getProductsInStock(page, this.size)
+            if (res.code === RESULT.SUCCESS) {
+                this.tableData = res.data['contents']
+                this.totalElements = res.data['totalElements']
+            } else {
+                message.error(res.message)
+            }
+        },
+        handleSizeChange(val) {
+            console.log(val)
+        },
+        handleDesView(index, row) {
+            console.log(index + ' ' + row)
+        },
+        handleSourceView(index, row) {
+            console.log(index + ' ' + row)
+        },
+    },
+    computed: {
+    },
+    mounted() {
+        this.loadTableData(0)
+    },
 }
 </script>
 
