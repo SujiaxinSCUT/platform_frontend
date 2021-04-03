@@ -4,6 +4,8 @@ import Business from "@/views/business/Business";
 import Admin from "@/views/admin/Admin";
 import {userDetailsStorage} from "@/utils/request";
 import MyProduct from "@/views/business/MyProduct";
+import SubmitSalesOrder from "@/views/business/SubmitSalesOrder";
+import SubmitPurchaseOrder from "@/views/business/SubmitPurchaseOrder";
 
 
 
@@ -26,13 +28,15 @@ const routes = [
                 path: "submit-sales-order",
                 meta: {
                     requireAuth: true
-                }
+                },
+                component: SubmitSalesOrder
             },
             {
                 path: "submit-purchasing-order",
                 meta: {
                     requireAuth: true
-                }
+                },
+                component: SubmitPurchaseOrder
             },
             {
                 path: "my-order",

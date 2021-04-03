@@ -1,0 +1,5 @@
+export const PARENT_TYPE = {
+    MY_PRODUCT: 0,
+    SUBMIT_SALES_ORDER: 1,
+    SUBMIT_PURCHASE_ORDER: 2
+}

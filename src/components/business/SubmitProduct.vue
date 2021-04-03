@@ -1,7 +1,7 @@
 <template>
     <el-dialog id="SubmitProduct" :visible.sync="dialogVisible" style="" title="提交新产品" :before-close="close"
         width="450px" :center="true" :modal="false">
-        <el-form :model="form" label-position="left" :rules="rules" ref="form">
+        <el-form :model="form" label-position="left" :rules="rules" ref="form" size="medium">
             <el-form-item label="产品名称" :label-width="formLabelWidth" prop="productName" required>
                 <el-input v-model="form.productName" style="width: 200px" size="medium" :disabled="loading"></el-input>
             </el-form-item>

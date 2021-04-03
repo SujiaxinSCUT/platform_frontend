@@ -1,8 +1,8 @@
 <template>
-    <el-dialog id="AddProduct" :visible.sync="dialogVisible" style="" title="提交新产品" :before-close="close"
-               width="450px" :center="true" :modal="false">
+    <el-dialog id="AddProduct" :visible.sync="dialogVisible" style="" title="添加产品" :before-close="close"
+               width="500px" :center="true" :modal="false">
         <el-form :model="form" ref="form" :rules="rules"
-                 label-position="left" :hide-required-asterisk="true" label-width="100px">
+                 label-position="left" :hide-required-asterisk="true" label-width="100px" size="medium">
             <el-form-item prop="product" label="请选择产品" required>
                 <el-autocomplete placeholder="选择产品" v-model="form.product"
                           :fetch-suggestions="querySearchAsync" @select="handleSelect"
@@ -18,7 +18,6 @@
                 <el-input-number v-model="form.price"
                                  :precision="2" :min="0" :step="0.01" :disabled="loading"
                                     :change="handlePriceChange">
-
                 </el-input-number>
             </el-form-item>
             <el-form-item prop="quantity" label="数量" required>
@@ -26,21 +25,51 @@
                                  :min="0" :step="0.01" :disabled="loading"
                                 :change="handleQuantityChange"></el-input-number>
             </el-form-item>
+            <el-form-item prop="batchs" label="指定批次" v-if="parentType === PARENT_TYPE.SUBMIT_SALES_ORDER"
+                           required>
+                <el-button>添加批次</el-button>
+                <el-table :data="form.batchs" style="width: 80%" height="160">
+                    <el-table-column
+                        prop="batch_id"
+                        label="批次号"
+                        width="120">
+                    </el-table-column>
+                    <el-table-column
+                        label="数量"
+                        width="120">
+                        <template slot-scope="scope">
+                            <el-input-number v-model="form.batchs['quantity']" size="mini" controls-position="right"
+                                             :precision="2" :min="0" :step="0.01" :disabled="loading"
+                                             :change="handleBatchNumChange(scope.$index, scope.row)" style="width: 120px">
+                            </el-input-number>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        fixed="right"
+                        label="操作"
+                        width="80">
+                        <el-button
+                            size="mini"
+                            @click="handleDesView(scope.$index, scope.row)" type="danger">删除</el-button>
+                    </el-table-column>
+                </el-table>
+            </el-form-item>
         </el-form>
-        <div slot="footer">
+        <div slot="footer" style="margin-top: -20px">
             <el-button type="primary" @click="submitForm('form')" :loading="loading">提交</el-button>
         </div>
     </el-dialog>
 </template>
 
 <script>
-import {getAllProducts, addStock} from "@/service/business";
+import {getAllProducts, addStock, getAllProductsInStock} from "@/service/business";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue"
+const {PARENT_TYPE} = require("@/utils/business_const")
 
 export default {
     name: "AddProduct",
-    props: ['dialogVisible'],
+    props: ['dialogVisible', 'parentType'],
     data() {
         var checkNumber = (rule, value, callback) => {
             if (!value) {
@@ -60,16 +89,22 @@ export default {
                 name: '',
                 unit: '',
                 quantity: 0,
-                price: 0
+                price: 0,
+                batchs: [
+                    {
+                        batch_id: '12345567'
+                    }
+                ]
             },
             rules: {
                 product: [{required: true, trigger: 'blur', message: '请选择产品'}],
                 quantity: [{validator: checkNumber, trigger: 'blur'}],
                 price: [{validator: checkNumber, trigger: 'blur'}],
             },
-            currentProductId: 0,
+            currentProduct: null,
             productList: null,
-            loading: false
+            loading: false,
+            PARENT_TYPE
         }
     },
     methods: {
@@ -77,7 +112,7 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     let form = this.form
-                    this.addStock(this.currentProductId, form.quantity, form.price)
+                    this.addStock(this.currentProduct['id'], form.quantity, form.price)
                 } else {
                     console.log('error submit!!');
                     return false;
@@ -89,7 +124,11 @@ export default {
         },
         async querySearchAsync(queryString, cb) {
             if (!this.productList) {
-                await this.getProductList()
+                if (this.parentType === PARENT_TYPE.SUBMIT_SALES_ORDER) {
+                    await this.getProductsInStock()
+                } else {
+                    await this.getProductList()
+                }
             }
             let productList = this.productList ? this.productList : []
             let results = queryString ? productList.filter(this.createStateFilter(queryString)) : productList
@@ -119,6 +158,14 @@ export default {
             }
             this.loading = false
         },
+        async getProductsInStock() {
+            let res = await getAllProductsInStock()
+            if (res.code === RESULT.SUCCESS) {
+                this.productList = res.data
+            } else {
+                message.error(res.message)
+            }
+        },
         createStateFilter(queryString) {
             return (product) => {
                 return (product.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
@@ -128,18 +175,24 @@ export default {
             let form = this.form
             form.name = item['name']
             form.unit = item['unit']
-            this.currentProductId = item['id']
+            this.currentProduct = item
         },
         clear() {
             this.$refs['form'].resetFields()
-            this.currentProductId = 0
+            this.currentProduct = null
         },
         handlePriceChange(value) {
             this.form.price = value
         },
         handleQuantityChange(value) {
             this.form.quantity = value
-        }
+        },
+        handleBatchNumChange() {
+
+        },
+    },
+    mounted() {
+
     }
 }
 </script>

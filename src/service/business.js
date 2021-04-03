@@ -104,10 +104,37 @@ export async function addStock(productId, quantity, price) {
     }
 }
 
-export async function getProductsInStock(page, size) {
-    let userDetails = userDetailsStorage.get()
-    let path = `/${page}/${size}/${userDetails['id']}`
+export async function getProductsInStockPageable(page, size) {
+    let path = `/pageable/${page}/${size}`
     const res = await getProductsInStock_api(path)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+            message = ""
+        } else {
+            code = RESULT.FAILED
+            message = "获取产品列表失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取产品列表失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function getAllProductsInStock() {
+    const res = await getProductsInStock_api('')
     let code
     let message
     let res_data

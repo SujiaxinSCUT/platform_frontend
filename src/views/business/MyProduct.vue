@@ -59,17 +59,17 @@
         </el-container>
 
         <submit-product :dialog-visible="submitProductDialogVisible" @close-dialog="closeSubmitProductDialog"/>
-        <add-product :dialog-visible="addProductDialogVisible" @close-dialog="closeAddProductDialog"/>
+        <add-product :dialog-visible="addProductDialogVisible" :parent-type="PARENT_TYPE.MY_PRODUCT" @close-dialog="closeAddProductDialog"/>
     </div>
 </template>
 
 <script>
 import SubmitProduct from "@/components/business/SubmitProduct";
 import AddProduct from "@/components/business/AddProduct";
-import {getProductsInStock} from "@/service/business";
+import {getProductsInStockPageable} from "@/service/business";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue"
-
+const {PARENT_TYPE} = require('@/utils/business_const');
 const PAGE_SIZE = 5
 
 export default {
@@ -83,6 +83,7 @@ export default {
             size: PAGE_SIZE,
             currentPage: 1,
             totalElements: 0,
+            PARENT_TYPE
         }
     },
     methods: {
@@ -98,7 +99,7 @@ export default {
             }
         },
         async loadTableData(page) {
-            const res = await getProductsInStock(page, this.size)
+            const res = await getProductsInStockPageable(page, this.size)
             if (res.code === RESULT.SUCCESS) {
                 this.tableData = res.data['contents']
                 this.totalElements = res.data['totalElements']
