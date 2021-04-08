@@ -25,35 +25,6 @@
                                  :min="0" :step="0.01" :disabled="loading"
                                 :change="handleQuantityChange"></el-input-number>
             </el-form-item>
-            <el-form-item prop="batchs" label="指定批次" v-if="parentType === PARENT_TYPE.SUBMIT_SALES_ORDER"
-                           required>
-                <el-button>添加批次</el-button>
-                <el-table :data="form.batchs" style="width: 80%" height="160">
-                    <el-table-column
-                        prop="batch_id"
-                        label="批次号"
-                        width="120">
-                    </el-table-column>
-                    <el-table-column
-                        label="数量"
-                        width="120">
-                        <template slot-scope="scope">
-                            <el-input-number v-model="form.batchs['quantity']" size="mini" controls-position="right"
-                                             :precision="2" :min="0" :step="0.01" :disabled="loading"
-                                             :change="handleBatchNumChange(scope.$index, scope.row)" style="width: 120px">
-                            </el-input-number>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        fixed="right"
-                        label="操作"
-                        width="80">
-                        <el-button
-                            size="mini"
-                            @click="handleDesView(scope.$index, scope.row)" type="danger">删除</el-button>
-                    </el-table-column>
-                </el-table>
-            </el-form-item>
         </el-form>
         <div slot="footer" style="margin-top: -20px">
             <el-button type="primary" @click="submitForm('form')" :loading="loading">提交</el-button>
@@ -62,7 +33,7 @@
 </template>
 
 <script>
-import {getAllProducts, addStock, getAllProductsInStock} from "@/service/business";
+import {getAllProducts, addStock} from "@/service/business";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue"
 const {PARENT_TYPE} = require("@/utils/business_const")
@@ -90,11 +61,6 @@ export default {
                 unit: '',
                 quantity: 0,
                 price: 0,
-                batchs: [
-                    {
-                        batch_id: '12345567'
-                    }
-                ]
             },
             rules: {
                 product: [{required: true, trigger: 'blur', message: '请选择产品'}],
@@ -111,8 +77,14 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    let form = this.form
-                    this.addStock(this.currentProduct['id'], form.quantity, form.price)
+                    if (this.parentType === PARENT_TYPE.MY_PRODUCT) {
+                        let form = this.form
+                        this.addStock(this.currentProduct['id'], form.quantity, form.price)
+                    } else {
+                        this.addProductInOrder()
+                        this.close()
+                        this.clear()
+                    }
                 } else {
                     console.log('error submit!!');
                     return false;
@@ -124,11 +96,7 @@ export default {
         },
         async querySearchAsync(queryString, cb) {
             if (!this.productList) {
-                if (this.parentType === PARENT_TYPE.SUBMIT_SALES_ORDER) {
-                    await this.getProductsInStock()
-                } else {
-                    await this.getProductList()
-                }
+                await this.getProductList()
             }
             let productList = this.productList ? this.productList : []
             let results = queryString ? productList.filter(this.createStateFilter(queryString)) : productList
@@ -158,13 +126,14 @@ export default {
             }
             this.loading = false
         },
-        async getProductsInStock() {
-            let res = await getAllProductsInStock()
-            if (res.code === RESULT.SUCCESS) {
-                this.productList = res.data
-            } else {
-                message.error(res.message)
+        addProductInOrder() {
+            let data = {
+                product: this.currentProduct,
+                quantity: this.form.quantity,
+                price: this.form.price
             }
+            console.log(data)
+            this.$emit('add-product-item', data)
         },
         createStateFilter(queryString) {
             return (product) => {
@@ -186,9 +155,6 @@ export default {
         },
         handleQuantityChange(value) {
             this.form.quantity = value
-        },
-        handleBatchNumChange() {
-
         },
     },
     mounted() {

@@ -4,7 +4,7 @@
             <el-form ref="ruleForm" :rules="rules" :model="ruleForm"
                      label-position="left" label-width="50px"
                      :hide-required-asterisk=true>
-                <el-image :src="logoImg" style="left: 20%;margin-bottom: 20px"></el-image>
+                <el-image :src="logoImg" style="margin-bottom: 20px"></el-image>
                 <el-form-item label="账号" style="margin-right: 20px;"
                               prop="username">
                     <el-input auto-complete="off" v-model="ruleForm.username" :disabled="loading"></el-input>
@@ -108,6 +108,16 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#login{
+        font-family: Avenir, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        color: #2c3e50;
+        padding-top: 60px;
+        background-color: azure;
+        height: 100%;
+}
 .box-card {
     align-content: center;
     width:360px;

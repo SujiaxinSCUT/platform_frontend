@@ -1,57 +1,60 @@
 <template>
     <div id="BaseView" style="width: 100%; height: 100%;">
-        <el-card class="box-card">
+<!--        <el-card class="box-card">-->
             <el-container>
-                <el-aside style="width: 200px;height: 500px">
-                    <custom-nav :nav-list=this.navList :roles=this.roles></custom-nav>
+                <el-aside style="width: 250px;height: 100%;">
+                    <div class="logo">
+                        <span>
+                            Hello! {{this.userName}}
+                        </span>
+                    </div>
+                        <business-nav v-if="roles.includes('ROLE_USER')"></business-nav>
+
+
                 </el-aside>
                 <el-container>
+                    <el-header style="width: 100%;height: 50px; background-color: #409EFF;border: 2px solid #EBEEF5;"></el-header>
                     <el-main>
                         <router-view></router-view>
                     </el-main>
                 </el-container>
             </el-container>
-        </el-card>
+<!--        </el-card>-->
 
 
     </div>
 </template>
 
 <script>
-import CustomNav from "@/components/CustomNav";
-import {navList} from "../utils/nav"
+import BusinessNav from "@/components/BusinessNav";
 const MyProduct = require("@/views/business/MyProduct");
-
+import {userDetailsStorage} from "@/utils/request";
 export default {
     name: "BasicView",
-    components: {CustomNav},
+    components: {BusinessNav},
     props: ['roles'],
     data() {
         return {
-            navList: null,
-            myProduct: MyProduct
+            myProduct: MyProduct,
+            userName: userDetailsStorage.get()['name']
         }
     },
     methods: {
-        loadRoles() {
-            if (this.roles.includes("ROLE_USER")) {
-                this.navList = navList.businessNavList
-            } else {
-                this.navList = navList.adminNavList
-            }
-        }
+
     },
     beforeMount() {
-        this.loadRoles()
     },
 }
 </script>
 
 <style scoped>
-.box-card {
-    align-content: center;
-    width:800px;
-    height: 540px;
-    margin:auto;
+.logo {
+    height: 50px;
+    width: 250px;
+    border: 2px solid #EBEEF5;
+    text-align: center;
+    font-size: 20px;
+    background-color: #409EFF;
+    -webkit-text-fill-color: #fff;
 }
 </style>

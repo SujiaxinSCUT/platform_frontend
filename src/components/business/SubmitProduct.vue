@@ -20,7 +20,7 @@
                            accept="image/png,image/gif,image/jpg" multiple>
                     <el-button slot="trigger" size="small" type="primary" :disabled="loading">选取图片</el-button>
                     <div slot="tip" class="el-upload__tip" style="margin-top: -10px; margin-bottom: -10px">
-                        只能上传3张以内jpg/png文件，且不超过1MB</div>
+                        只能上传3张以内jpg/png文件且不超过1MB</div>
 
                 </el-upload>
             </el-form-item>

@@ -1,11 +1,13 @@
 <template>
     <div id="CustomNav">
-        <el-menu default-active="1" style="height: 500px;width: 200px;">
+        <el-menu default-active="1" style="height: 100vh;" background-color="#fff"
+                  active-text-color="#2c3e50">
             <template v-for="(nav, index) in navList"
                       :index=index >
                 <template v-if="!nav.accessRoles||this.permissionMatch(nav.accessRoles)">
                     <el-submenu v-if="nav.hasChildren" :key="index" :index=index.toString()>
                         <template slot="title">
+                            <i :class="nav.icon"></i>
                             <span>{{ nav.name }}</span>
                         </template>
                         <el-menu-item-group>
@@ -16,7 +18,9 @@
                         </el-menu-item-group>
                     </el-submenu>
                     <el-menu-item v-else :key="index"  :index=index.toString()>
+
                         <template slot="title">
+                            <i :class="nav.icon"></i>
                             <router-link :to="nav.route.path" tag="div">{{ nav.name }}</router-link>
                         </template>
                     </el-menu-item>
