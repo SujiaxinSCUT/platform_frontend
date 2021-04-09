@@ -1,14 +1,14 @@
 <template>
     <div id="SubmitSalesOrder">
-        <submit-order :is-sales-order="true"></submit-order>
+        <check-order></check-order>
     </div>
 </template>
 
 <script>
-import SubmitOrder from "@/components/business/SubmitOrder";
+import CheckOrder from "@/components/business/CheckOrder";
 export default {
     name: "SubmitSalesOrder",
-    components: {SubmitOrder}
+    components: {CheckOrder}
 }
 </script>
 

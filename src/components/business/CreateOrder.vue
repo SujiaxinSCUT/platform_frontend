@@ -1,5 +1,5 @@
 <template>
-    <div id="SubmitOrder">
+    <div id="CreateOrder">
         <el-container>
             <el-header style="text-align: left; height: 30px; margin: 0">
                 <el-button type="primary" style="margin-right: 20px"
@@ -36,8 +36,7 @@
                         label="操作"
                         width="100">
                         <template slot-scope="scope">
-                            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-                            <el-button type="text" size="small">编辑</el-button>
+                            <el-button @click="handleDelete(scope.$index, tableData)" type="text" size="small">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -60,7 +59,9 @@
                     </el-form-item>
                 </el-form>
             </el-main>
-            <el-footer></el-footer>
+            <el-footer>
+                <el-button type="primary">提交</el-button>
+            </el-footer>
         </el-container>
         <add-product :dialog-visible="addProductDialogVisible"
                      :parent-type="parentType" @close-dialog="closeAddProductDialog"
@@ -72,7 +73,7 @@
 import AddProduct from "@/components/business/AddProduct";
 const {PARENT_TYPE} = require('@/utils/business_const');
 export default {
-    name: "SubmitOrder",
+    name: "CreateOrder",
     components: {AddProduct},
     props: ['isSalesOrder'],
     data() {
@@ -116,12 +117,15 @@ export default {
                 quantity: data['quantity'],
                 totalPrice: data['price'] * data['quantity'],
             }
-            this.form.totalPrice += item.totalPrice
             this.tableData.push(item)
+            this.form.totalPrice += item.totalPrice
+        },
+        handleDelete(index, rows) {
+            let deleteOne = rows.splice(index, 1)
+            this.form.totalPrice -= deleteOne[0].totalPrice
         }
     },
     computed: {
-
     }
 }
 </script>

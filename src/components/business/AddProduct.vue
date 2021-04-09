@@ -132,7 +132,6 @@ export default {
                 quantity: this.form.quantity,
                 price: this.form.price
             }
-            console.log(data)
             this.$emit('add-product-item', data)
         },
         createStateFilter(queryString) {
