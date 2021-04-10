@@ -2,25 +2,11 @@
     <div id="OrderDetails">
         <el-container>
             <el-main>
-                <el-card v-for="(index, product) in productList" :key="index">
-                    <el-form :inline="true" :label-width="100">
-                        <el-form-item label="产品名称:">
-                            {{product.name}}
-                        </el-form-item>
-                        <el-form-item label="单位:">
-                            {{product.unit}}
-                        </el-form-item>
-                    </el-form>
-                    <el-form :inline="true" :label-width="100">
-                        <el-form-item label="单价:">
-                            {{product.price}}
-                        </el-form-item>
-                        <el-form-item label="数量:">
-                            {{product.quantity}}
-                        </el-form-item>
-                    </el-form>
+                <order-detail v-for="(product, index) in productList" :index="index"
+                              :product="product" :key="index">
 
-                </el-card>
+                </order-detail>
+
             </el-main>
         </el-container>
 
@@ -28,12 +14,17 @@
 </template>
 
 <script>
+import OrderDetail from "@/components/business/OrderDetail";
 export default {
     name: "OrderDetails",
+    components: {OrderDetail},
     data() {
         return {
-            productList: []
+            productList: [],
         }
+    },
+    methods: {
+
     }
 }
 </script>
