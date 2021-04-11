@@ -24,11 +24,11 @@
                         width="100">
                     </el-table-column>
                     <el-table-column label="操作">
-                        <template slot-scope="scope">
-                            <el-button
-                                size="mini"
-                                @click="handleDesView(scope.$index, scope.row)" type="text">核对信息</el-button>
-                        </template>
+                            <router-link :to="orderDetailsPath" tag="div" slot-scope="scope">
+                                <el-button
+                                    size="mini"
+                                    @click="handleOrderDetails(scope.$index, tableData)" type="text">核对信息</el-button>
+                            </router-link>
                     </el-table-column>
                 </el-table>
             </el-main>
@@ -41,7 +41,19 @@ export default {
     name: "CheckOrder",
     data() {
         return {
-            tableData: [],
+            tableData: [
+                {
+                    orderId: 1,
+                    clientName: 'user2',
+                    transactionDatetime: new Date(),
+                    status: '待确认',
+                }
+            ],
+            orderDetailsPath: '/business/order-details'
+        }
+    },
+    methods: {
+        handleOrderDetails() {
 
         }
     }

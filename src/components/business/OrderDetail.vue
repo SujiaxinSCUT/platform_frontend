@@ -1,66 +1,68 @@
 <template>
-    <el-card id="OrderDetail">
-        <el-form :inline="true" :label-width="100">
-            <el-form-item label="产品名称:">
-                {{product.name}}
-            </el-form-item>
-            <el-form-item label="单位:">
-                {{product.unit}}
-            </el-form-item>
-        </el-form>
-        <el-form :inline="true" :label-width="100">
-            <el-form-item label="单价:">
-                {{product.price}}
-            </el-form-item>
-            <el-form-item label="数量:">
-                {{product.quantity}}
-            </el-form-item>
-        </el-form>
-        <el-form :label-width="100">
-            <el-form-item label="选择批次">
-                <el-autocomplete placeholder="选择产品" v-model="selectedBatch"
-                                 :fetch-suggestions="querySearchAsync" @select="handleSelect"
-                                 @change="clear" clearable></el-autocomplete>
-            </el-form-item>
-            <el-form-item>
-                <el-table
-                    :data="tableData"
-                    style="width: 610px;" height="250">
-                    <el-table-column
-                        prop="batchId"
-                        label="批次号"
-                        width="150">
-                    </el-table-column>
-                    <el-table-column
-                        prop="date"
-                        label="进货时间"
-                        width="120">
-                    </el-table-column>
-                    <el-table-column
-                        prop="transactionNumber"
-                        label="交易数量"
-                        width="120">
-                        <template slot-scope="scope">
-                            <el-input-number v-model="tableData[scope.$index]['transactionNumber']"
-                                             :precision="2" :step="0.01"
-                                             :min="0" :max="tableData[scope.$index]['quantity']"></el-input-number>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        prop="quantity"
-                        label="余量"
-                        width="120">
-                    </el-table-column>
-                    <el-table-column
-                        label="操作"
-                        width="100">
-                        <template slot-scope="scope">
-                            <el-button @click="handleDelete(scope.$index, tableData)" type="text" size="small">删除</el-button>
-                        </template>
-                    </el-table-column>
-            </el-form-item>
-        </el-form>
-    </el-card>
+    <div id="OrderDetail">
+        <ul>
+            <el-card style="width: 1000px;">
+                <el-form label-width="100px">
+                    <el-form-item label="产品名称:">
+                        {{product.name}}
+                    </el-form-item>
+                    <el-form-item label="单位:">
+                        {{product.unit}}
+                    </el-form-item>
+                    <el-form-item label="单价:">
+                        {{product.price}}
+                    </el-form-item>
+                    <el-form-item label="数量:">
+                        {{product.quantity}}
+                    </el-form-item>
+                    <el-form-item label="选择批次">
+                        <el-autocomplete placeholder="选择产品" v-model="selectedBatch"
+                                         :fetch-suggestions="querySearchAsync" @select="handleSelect"
+                                          clearable></el-autocomplete>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-table
+                            :data="tableData"
+                            style="width: 700px;" height="250">
+                            <el-table-column
+                                prop="batchId"
+                                label="批次号"
+                                width="150">
+                            </el-table-column>
+                            <el-table-column
+                                prop="date"
+                                label="进货时间"
+                                width="120">
+                            </el-table-column>
+                            <el-table-column
+                                prop="transactionNumber"
+                                label="交易数量"
+                                width="200">
+                                <template slot-scope="scope">
+                                    <el-input-number v-model="tableData[scope.$index]['transactionNumber']"
+                                                     :precision="2" :step="0.01" @change="updateBatch"
+                                                     :min="0" :max="tableData[scope.$index]['quantity']"></el-input-number>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="quantity"
+                                label="余量"
+                                width="120">
+                            </el-table-column>
+                            <el-table-column
+                                label="操作"
+                                width="100">
+                                <template slot-scope="scope">
+                                    <el-button @click="handleDelete(scope.$index, tableData)" type="text" size="small">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-form-item>
+                </el-form>
+            </el-card>
+        </ul>
+    </div>
+
 </template>
 
 <script>
@@ -70,7 +72,7 @@ export default {
     props: ['index', 'product'],
     data() {
         return {
-            batchList: [],
+            batchList: null,
             tableData: [],
             selectedBatch: '',
         }
@@ -94,7 +96,13 @@ export default {
             };
         },
         async getStock() {
-
+            this.batchList = [
+                {
+                    batch_id: 1,
+                    date: new Date(),
+                    quantity: 100
+                }
+            ]
         },
         handleSelect(item) {
             if (this.batchExist(item['batch_id'])) {
@@ -107,16 +115,27 @@ export default {
                 transactionNumber: 0,
                 quantity: item['quantity']
             }
-            this.batchList.push(batch)
+            this.tableData.push(batch)
             this.selectedBatch = ''
         },
         batchExist(batchId) {
             for (let i in this.tableData) {
-                if (this.tableData[i]['batch_id'] === batchId) {
+                if (this.tableData[i]['batchId'] === batchId) {
                     return true
                 }
             }
             return false
+        },
+        updateBatch() {
+            let data = {
+                index: this.index,
+                batch: this.tableData
+            }
+            this.$emit('update-batch', data)
+        },
+        handleDelete(index, rows) {
+            rows.splice(index, 1)
+            this.updateBatch()
         }
     }
 }

@@ -6,6 +6,7 @@ import {userDetailsStorage} from "@/utils/request";
 import MyProduct from "@/views/business/MyProduct";
 import SubmitSalesOrder from "@/views/business/SubmitSalesOrder";
 import SubmitPurchaseOrder from "@/views/business/SubmitPurchaseOrder";
+import OrderDetails from "@/components/business/OrderDetails";
 
 
 
@@ -30,6 +31,13 @@ const routes = [
                     requireAuth: true
                 },
                 component: SubmitSalesOrder
+            },
+            {
+                path: "order-details",
+                meta: {
+                    requireAuth: true
+                },
+                component: OrderDetails
             },
             {
                 path: "submit-purchasing-order",
