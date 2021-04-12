@@ -13,7 +13,7 @@
             <el-main>
                 <el-table
                     :data="tableData"
-                    style="width: 100%;margin-top: -20px" height="320">
+                    style="width: 700px;margin-top: -20px" height="480">
                     <el-table-column
                         prop="name"
                         label="产品名称"
@@ -70,7 +70,7 @@ import {getProductsInStockPageable} from "@/service/business";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue"
 const {PARENT_TYPE} = require('@/utils/business_const');
-const PAGE_SIZE = 5
+const PAGE_SIZE = 10
 
 export default {
     name: "MyProduct",

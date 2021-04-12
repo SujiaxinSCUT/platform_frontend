@@ -7,6 +7,7 @@ import MyProduct from "@/views/business/MyProduct";
 import SubmitSalesOrder from "@/views/business/SubmitSalesOrder";
 import SubmitPurchaseOrder from "@/views/business/SubmitPurchaseOrder";
 import OrderDetails from "@/components/business/OrderDetails";
+import MyOrder from "@/views/business/MyOrder";
 
 
 
@@ -50,7 +51,8 @@ const routes = [
                 path: "my-order",
                 meta: {
                     requireAuth: true
-                }
+                },
+                component: MyOrder
             }
         ]
     },
