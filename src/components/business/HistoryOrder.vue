@@ -4,25 +4,28 @@
             <el-main>
                 <el-form :inline="true" :model="form" label-width="100px">
                     <el-form-item prop="productName" label="产品名称">
-                        <el-input v-model="form.productName"></el-input>
+                        <el-input v-model="form.productName" @change="loadData(0)"></el-input>
                     </el-form-item>
-                    <el-form-item prop="date" label="交易时间">
+                    <el-form-item  label="交易时间">
                         <el-date-picker
-                            v-model="form.date"
-                            type="datetimerange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                            v-model="form.startDate"
+                            type="datetime"
+                            placeholder="开始日期"
+                            @change="loadData(0)">
+                        </el-date-picker>
+                        <el-date-picker
+                            v-model="form.endDate"
+                            type="datetime"
+                            placeholder="截止日期"
+                            @change="loadData(0)">
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item prop="username" label="交易方名称">
-                        <el-input v-model="form.username"></el-input>
+                        <el-input v-model="form.username" @change="loadData(0)"></el-input>
                     </el-form-item>
                     <el-form-item prop="type" style="margin-left: 30px">
-                        <el-radio-group v-model="form.type">
-                            <el-radio label="销售订单"></el-radio>
-                            <el-radio label="进货订单"></el-radio>
-                        </el-radio-group>
+                            <el-radio v-model="form.type" label="1" @change="loadData(0)">销售订单</el-radio>
+                            <el-radio v-model="form.type" label="2" @change="loadData(0)">进货订单</el-radio>
                     </el-form-item>
                 </el-form>
                 <el-divider></el-divider>
@@ -49,6 +52,10 @@
 </template>
 
 <script>
+import {getOrder} from "@/service/business";
+import {RESULT} from "@/utils/http";
+import {message} from "ant-design-vue";
+
 const PAGE_SIZE = 10
 export default {
     name: "HistoryOrder",
@@ -56,9 +63,10 @@ export default {
         return {
             form: {
                 productName: '',
-                date: ['', ''],
+                startDate: '',
+                endDate: '',
                 username: '',
-                type: ''
+                type: '2'
             },
             tableData: [],
             size: PAGE_SIZE,
@@ -67,9 +75,41 @@ export default {
         }
     },
     methods: {
-        handleCurrentChange() {
-
-        }
+        async loadData(page) {
+            let post_data = {
+                productName: this.form.productName,
+                startDate: this.form.startDate,
+                endDate: this.form.endDate,
+                username: this.form.username,
+                salesOrder: this.form.type === "1" ? true : false
+            }
+            let res = await getOrder(page, this.size, post_data)
+            if (res.code === RESULT.SUCCESS) {
+                let data = res.data['contents']
+                this.totalElements = res.data['totalElements']
+                this.tableData = []
+                for (let i in data) {
+                    let item = data[i]
+                    this.tableData.push({
+                        orderId: item['id'],
+                        username: data.sales_order ? item['clientName'] : item['supplierName'],
+                        date: item['date'],
+                        status: item['status'],
+                        type: data.sales_order ? "销售订单" : "进货订单"
+                    })
+                }
+            } else {
+                message.error(res.message)
+            }
+        },
+        handleCurrentChange(page) {
+            if (page !== this.currentPage) {
+                this.loadTableData(page - 1)
+            }
+        },
+    },
+    mounted() {
+        this.loadData(0)
     }
 }
 </script>

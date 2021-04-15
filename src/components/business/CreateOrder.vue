@@ -3,7 +3,7 @@
         <el-container>
             <el-header style="text-align: left; height: 30px; margin: 0">
                 <el-button type="primary" style="margin-right: 20px"
-                           @click="addProductDialogVisible = true">
+                           @click="addProductDialogVisible = true" :disabled="loading">
                     添加产品
                 </el-button>
             </el-header>
@@ -11,7 +11,7 @@
             <el-main>
                 <el-table
                     :data="tableData"
-                    style="width: 610px;" height="250">
+                    style="width: 610px;" height="250" :disabled="loading">
                     <el-table-column
                         prop="name"
                         label="产品名称"
@@ -41,7 +41,7 @@
                     </el-table-column>
                 </el-table>
                 <el-divider></el-divider>
-                <el-form :inline="true" :model="form" label-width="100px" :rules="rules">
+                <el-form :inline="true" :model="form" label-width="100px" :rules="rules" ref="form" :disabled="loading">
                     <el-form-item prop="clientName" label="客户名称">
                         <el-input v-model="form.clientName"></el-input>
                     </el-form-item>
@@ -53,14 +53,14 @@
                         </el-date-picker>
                     </el-form-item>
                 </el-form>
-                <el-form :model="form" label-width="100px" :rules="rules">
+                <el-form :model="form" label-width="100px" :rules="rules" ref="form">
                     <el-form-item prop="totalPrice" label="总价">
                         {{form.totalPrice}}
                     </el-form-item>
                 </el-form>
             </el-main>
             <el-footer>
-                <el-button type="primary">提交</el-button>
+                <el-button type="primary" @click="submitForm('form')" :loading="loading">提交</el-button>
             </el-footer>
         </el-container>
         <add-product :dialog-visible="addProductDialogVisible"
@@ -71,7 +71,12 @@
 
 <script>
 import AddProduct from "@/components/business/AddProduct";
+import {createOrder} from "@/service/business";
+import {message} from "ant-design-vue"
+import {RESULT} from "@/utils/http";
+
 const {PARENT_TYPE} = require('@/utils/business_const');
+
 export default {
     name: "CreateOrder",
     components: {AddProduct},
@@ -103,9 +108,19 @@ export default {
                 transactionDatetime: [{required: true, trigger: 'blur', message: '请选择交易时间'}],
                 totalPrice: [{validator: checkNumber, trigger: 'blur'}],
             },
+            loading: false
         }
     },
     methods: {
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.submitOrder()
+                } else {
+                    return false;
+                }
+            })
+        },
         closeAddProductDialog() {
             this.addProductDialogVisible = false
         },
@@ -123,6 +138,30 @@ export default {
         handleDelete(index, rows) {
             let deleteOne = rows.splice(index, 1)
             this.form.totalPrice -= deleteOne[0].totalPrice
+        },
+        async submitOrder() {
+            this.loading = true
+            let data = []
+            for (let i in this.tableData) {
+                let item = this.tableData[i]
+                data.push({
+                    productId: item['product']['id'],
+                    price: item['price'],
+                    quantity: item['quantity']
+                })
+            }
+            let res = await createOrder(this.form.clientName, this.form.transactionDatetime, data)
+            if (res.code === RESULT.SUCCESS) {
+                message.success("创建成功")
+                this.clear()
+            } else {
+                message.error(res.message)
+            }
+            this.loading = false
+        },
+        clear() {
+            this.$refs['form'].resetFields()
+            this.tableData = []
         }
     },
     computed: {

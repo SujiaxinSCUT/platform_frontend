@@ -32,30 +32,68 @@
                     </el-table-column>
                 </el-table>
             </el-main>
+            <el-footer>
+                <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    :page-size="size"
+                    :total="totalElements"
+                    layout="total, prev, pager, next, jumper"
+                >
+                </el-pagination>
+            </el-footer>
         </el-container>
     </div>
 </template>
 
 <script>
+import {getConfirmingOrder} from "@/service/business";
+import {RESULT} from "@/utils/http";
+import {message} from "ant-design-vue";
+
+const PAGE_SIZE = 10
 export default {
     name: "CheckOrder",
     data() {
         return {
             tableData: [
-                {
-                    orderId: 1,
-                    clientName: 'user2',
-                    transactionDatetime: new Date(),
-                    status: '待确认',
-                }
             ],
-            orderDetailsPath: '/business/order-details'
+            orderDetailsPath: '/business/order-details',
+            size: PAGE_SIZE,
+            currentPage: 1,
+            totalElements: 0,
         }
     },
     methods: {
+        async loadData(page) {
+            let res = await getConfirmingOrder(page, this.size)
+            if (res.code === RESULT.SUCCESS) {
+                let data = res.data['contents']
+                this.totalElements = res.data['totalElements']
+                for (let i in data) {
+                    let item = data[i]
+                    this.tableData.push({
+                        orderId: item['id'],
+                        clientName: item['clientName'],
+                        transactionDatetime: item['date'],
+                        status: '待确认',
+                    })
+                }
+            } else {
+                message.error(res.message)
+            }
+        },
         handleOrderDetails() {
 
-        }
+        },
+        handleCurrentChange(page) {
+            if (page !== this.currentPage) {
+                this.loadTableData(page - 1)
+            }
+        },
+    },
+    mounted() {
+        this.loadData(0)
     }
 }
 </script>
