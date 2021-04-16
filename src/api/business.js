@@ -33,7 +33,12 @@ export function getConfirmingOrder_api(page, size) {
     return get(url)
 }
 
-export function getOrderPageable(page, size, data) {
+export function getOrderPageable_api(page, size, data) {
     let url = `${ORDER}/pageable/${page}/${size}`
     return post(url, data)
+}
+
+export function getOrderedProductAll_api(path) {
+    let url = `${ORDER}/${path}`
+    return get(url)
 }

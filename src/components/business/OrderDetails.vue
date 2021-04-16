@@ -20,28 +20,19 @@
 
 <script>
 import OrderDetail from "@/components/business/OrderDetail";
+import {getOrderedProductAll} from "@/service/business";
 import {message} from "ant-design-vue";
+import {RESULT} from "@/utils/http";
 export default {
     name: "OrderDetails",
     components: {OrderDetail},
+    props: [],
     data() {
         return {
             productList: [
-                {
-                    name: 'ipad',
-                    unit: 'kg',
-                    price: 1000,
-                    quantity: 1,
 
-                },
-                {
-                    name: 'ipad',
-                    unit: 'kg',
-                    price: 1000,
-                    quantity: 1,
-
-                }
             ],
+            orderId: this.$route.params.orderId
         }
     },
     methods: {
@@ -69,7 +60,19 @@ export default {
                 }
             }
             return true
+        },
+        async loadProductList() {
+            let res = await getOrderedProductAll(this.orderId)
+            if (res.code === RESULT.SUCCESS) {
+                this.productList = res.data
+            } else {
+                message.error(res.message)
+            }
         }
+    },
+    mounted() {
+        console.log(this.orderId)
+        this.loadProductList()
     }
 }
 </script>

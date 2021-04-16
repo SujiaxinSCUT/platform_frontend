@@ -8,6 +8,7 @@ import SubmitSalesOrder from "@/views/business/SubmitSalesOrder";
 import SubmitPurchaseOrder from "@/views/business/SubmitPurchaseOrder";
 import OrderDetails from "@/components/business/OrderDetails";
 import MyOrder from "@/views/business/MyOrder";
+import AddStock from "@/components/business/AddStock";
 
 
 
@@ -27,6 +28,13 @@ const routes = [
                 component: MyProduct
             },
             {
+                path: "add-stock",
+                meta: {
+                    requireAuth: true
+                },
+                component: AddStock
+            },
+            {
                 path: "submit-sales-order",
                 meta: {
                     requireAuth: true
@@ -34,7 +42,7 @@ const routes = [
                 component: SubmitSalesOrder
             },
             {
-                path: "order-details",
+                path: "order-details/:orderId",
                 meta: {
                     requireAuth: true
                 },

@@ -67,6 +67,9 @@
 
 <script>
 import {message} from "ant-design-vue"
+import {RESULT} from "@/utils/http";
+import {getAllProductsInStock} from "@/service/business";
+
 export default {
     name: "OrderDetail",
     props: ['index', 'product'],
@@ -96,13 +99,12 @@ export default {
             };
         },
         async getStock() {
-            this.batchList = [
-                {
-                    batch_id: 1,
-                    date: new Date(),
-                    quantity: 100
-                }
-            ]
+            let res = await getAllProductsInStock()
+            if (res.code === RESULT.SUCCESS) {
+                this.batchList = res.data
+            } else {
+                message.error(res.message)
+            }
         },
         handleSelect(item) {
             if (this.batchExist(item['batch_id'])) {

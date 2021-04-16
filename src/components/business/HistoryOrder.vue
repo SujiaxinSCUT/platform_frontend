@@ -34,6 +34,11 @@
                     <el-table-column prop="date" label="交易时间"></el-table-column>
                     <el-table-column prop="type" label="订单类型"></el-table-column>
                     <el-table-column prop="username" label="交易方名称"></el-table-column>
+                    <el-table-column prop="status" label="订单状态">
+                        <span slot-scope="scope">
+                            {{statusMapping[tableData[scope.$index]['status']]}}
+                        </span>
+                    </el-table-column>
                     <el-table-column label="交易产品"></el-table-column>
                 </el-table>
             </el-main>
@@ -54,6 +59,7 @@
 <script>
 import {getOrder} from "@/service/business";
 import {RESULT} from "@/utils/http";
+const {STATUS_MAPPING} = require("@/model/OrderStatus")
 import {message} from "ant-design-vue";
 
 const PAGE_SIZE = 10
@@ -72,6 +78,7 @@ export default {
             size: PAGE_SIZE,
             currentPage: 1,
             totalElements: 0,
+            statusMapping: STATUS_MAPPING
         }
     },
     methods: {

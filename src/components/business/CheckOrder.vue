@@ -24,10 +24,13 @@
                         width="100">
                     </el-table-column>
                     <el-table-column label="操作">
-                            <router-link :to="orderDetailsPath" tag="div" slot-scope="scope">
+                            <router-link tag="div"
+                                         slot-scope="scope"
+                                         :to="'/business/order-details/' + tableData[scope.$index]['orderId']">
                                 <el-button
-                                    size="mini"
-                                    @click="handleOrderDetails(scope.$index, tableData)" type="text">核对信息</el-button>
+                                    size="mini" type="text">
+                                    核对信息
+                                </el-button>
                             </router-link>
                     </el-table-column>
                 </el-table>
@@ -83,8 +86,8 @@ export default {
                 message.error(res.message)
             }
         },
-        handleOrderDetails() {
-
+        handleOrderDetails(index, rows) {
+            this.$router.push({path: '/business/order-details/' + rows[index]['orderId']})
         },
         handleCurrentChange(page) {
             if (page !== this.currentPage) {
