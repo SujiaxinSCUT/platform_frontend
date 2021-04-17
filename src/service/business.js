@@ -1,7 +1,6 @@
 import {HTTP, RESULT} from "@/utils/http";
 import {
     createOrder_api,
-    getAllProducts_api,
     submitNewProduct_api,
     addStock_api,
     getProductsInStock_api,
@@ -39,34 +38,6 @@ export async function submitNewProduct(name, description, images, unit, price, q
         const response = res.response
         code = RESULT.FAILED
         message = response.data
-    } else {
-        code = RESULT.FAILED
-        message = "网络出错，请稍后再试"
-    }
-    return {
-        code: code,
-        message: message,
-        data: res_data
-    }
-}
-
-export async function getAllProducts() {
-    const res = await getAllProducts_api()
-    let code
-    let message
-    let res_data
-    if (res.status) {
-        if (res.status === HTTP.OK) {
-            code = RESULT.SUCCESS
-            res_data = res.data
-            message = ""
-        } else {
-            code = RESULT.FAILED
-            message = "获取产品列表失败"
-        }
-    } else if (res.response){
-        code = RESULT.FAILED
-        message = "获取产品列表失败"
     } else {
         code = RESULT.FAILED
         message = "网络出错，请稍后再试"

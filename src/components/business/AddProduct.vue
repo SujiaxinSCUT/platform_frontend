@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import {getAllProducts, addStock} from "@/service/business";
+import {addStock} from "@/service/business";
+import {getAllProducts} from "@/service/common";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue"
 const {PARENT_TYPE} = require("@/utils/business_const")

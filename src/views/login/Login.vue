@@ -93,7 +93,7 @@ export default {
             let res = await getUserDetails(username)
             if (res.code === RESULT.SUCCESS) {
                 if (userDetailsStorage.updateValue(res.data)) {
-
+                    console.log(res.data)
                     this.$router.push({path: `/${userType}`})
                 } else {
                     message.error("保存用户信息出错，请重新登录")

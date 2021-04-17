@@ -1,5 +1,6 @@
 import {HTTP, RESULT} from "@/utils/http";
-import {getUserDetails_api, login_api} from "@/api/common";
+import {getAllUsername_api, getUserDetails_api, login_api} from "@/api/common";
+import {getAllProducts_api} from "@/api/common";
 
 export async function login(username, password, isUser) {
     const res = await login_api(username, password, isUser)
@@ -54,6 +55,57 @@ export async function getUserDetails(username) {
         code: code,
         data: data,
         message: message
+    }
+}
+
+export async function getAllUsername() {
+    const res = await getAllUsername_api()
+    let code
+    let message
+    let data
+    if (res.status) {
+        code = RESULT.SUCCESS
+        data = res.data
+        message = "获取成功"
+    } else if (res.response){
+        message = "获取用户名称列表失败"
+        code = RESULT.FAILED
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        data: data,
+        message: message
+    }
+}
+
+export async function getAllProducts() {
+    const res = await getAllProducts_api()
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+            message = ""
+        } else {
+            code = RESULT.FAILED
+            message = "获取产品列表失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取产品列表失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
     }
 }
 

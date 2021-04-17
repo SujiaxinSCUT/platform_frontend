@@ -46,7 +46,8 @@
 
 <script>
 import SubmitProduct from "@/components/business/SubmitProduct";
-import {addStock, getAllProducts} from "@/service/business";
+import {addStock} from "@/service/business";
+import {getAllProducts} from "@/service/common";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue";
 export default {

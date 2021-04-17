@@ -9,7 +9,7 @@
                         </span>
                     </div>
                         <business-nav v-if="roles.includes('ROLE_USER')"></business-nav>
-
+                        <admin-nav v-else :roles="roles"></admin-nav>
 
                 </el-aside>
                 <el-container>
@@ -29,9 +29,10 @@
 import BusinessNav from "@/components/BusinessNav";
 const MyProduct = require("@/views/business/MyProduct");
 import {userDetailsStorage} from "@/utils/request";
+import AdminNav from "@/components/AdminNav";
 export default {
     name: "BasicView",
-    components: {BusinessNav},
+    components: {AdminNav, BusinessNav},
     props: ['roles'],
     data() {
         return {

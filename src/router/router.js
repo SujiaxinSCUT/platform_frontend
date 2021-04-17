@@ -9,6 +9,9 @@ import SubmitPurchaseOrder from "@/views/business/SubmitPurchaseOrder";
 import OrderDetails from "@/components/business/OrderDetails";
 import MyOrder from "@/views/business/MyOrder";
 import AddStock from "@/components/business/AddStock";
+import QueryUserOrder from "@/views/admin/QueryUserOrder";
+import PriceStatics from "@/views/admin/PriceStatics";
+import ProductTrace from "@/views/admin/ProductTrace";
 
 
 
@@ -73,18 +76,21 @@ const routes = [
                 path: "query-order",
                 meta: {
                     requireAuth: true
-                }
+                },
+                component: QueryUserOrder
             },{
                 path: "price-statics",
                 meta: {
                     requireAuth: true
-                }
+                },
+                component: PriceStatics
             },
             {
                 path: "product-trace",
                 meta: {
                     requireAuth: true
-                }
+                },
+                component: ProductTrace
             },
         ]
     }
