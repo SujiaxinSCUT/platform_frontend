@@ -4,7 +4,7 @@ import {
     submitNewProduct_api,
     addStock_api,
     getProductsInStock_api,
-    getConfirmingOrder_api, getOrderPageable_api, getOrderedProductAll_api
+    getConfirmingOrder_api, getOrderPageable_api, getOrderedProductAll_api, getProductInStock_api
 } from "@/api/business";
 import {userDetailsStorage} from "@/utils/request";
 
@@ -244,6 +244,35 @@ export async function getOrder(page, size, data) {
 export async function getOrderedProductAll(orderId) {
     let path = `order_id/${orderId}`
     const res = await getOrderedProductAll_api(path)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+            message = ""
+        } else {
+            code = RESULT.FAILED
+            message = "获取商品列表失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取商品列表失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function getProductInStock(productId) {
+    let path = `product_id/${productId}`
+    const res = await getProductInStock_api(path)
     let code
     let message
     let res_data

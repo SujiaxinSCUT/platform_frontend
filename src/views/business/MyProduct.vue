@@ -24,23 +24,27 @@
                         width="100">
                     </el-table-column>
                     <el-table-column label="描述">
-                        <template slot-scope="scope">
-                            <el-button
-                                size="mini"
-                                @click="handleDesView(scope.$index, scope.row)" type="text">查看</el-button>
-                        </template>
+                        <el-popover placement="right" trigger="click" slot-scope="scope">
+                            <span>{{tableData[scope.$index]['description']}}</span>
+                            <el-button slot="reference" type="text" size="mini">查看</el-button>
+                        </el-popover>
                     </el-table-column>
                     <el-table-column
                         prop="sum"
                         label="数量">
                     </el-table-column>
                     <el-table-column
-                        label="来源">
-                        <template slot-scope="scope">
-                            <el-button
-                                size="mini"
-                                @click="handleSourceView(scope.$index, scope.row)" type="text">查看</el-button>
-                        </template>
+                        label="库存明细">
+                        <el-popover placement="right" trigger="click" slot-scope="scope">
+                            <el-table :data="tempTableData" :max-height="400">
+                                <el-table-column prop="batchId" label="批次号" width="150"></el-table-column>
+                                <el-table-column prop="date" label="进货时间" width="150"></el-table-column>
+                                <el-table-column prop="quantity" label="余量" width="80"></el-table-column>
+                            </el-table>
+                            <el-button slot="reference" type="text" size="mini"
+                                       @click="getProductInStock(tableData[scope.$index]['id'])">
+                                查看</el-button>
+                        </el-popover>
                     </el-table-column>
                 </el-table>
             </el-main>
@@ -60,7 +64,7 @@
 </template>
 
 <script>
-import {getProductsInStockPageable} from "@/service/business";
+import {getProductsInStockPageable, getProductInStock} from "@/service/business";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue"
 const {PARENT_TYPE} = require('@/utils/business_const');
@@ -78,7 +82,8 @@ export default {
             size: PAGE_SIZE,
             currentPage: 1,
             totalElements: 0,
-            PARENT_TYPE
+            PARENT_TYPE,
+            tempTableData: []
         }
     },
     methods: {
@@ -111,6 +116,15 @@ export default {
         handleSourceView(index, row) {
             console.log(index + ' ' + row)
         },
+        async getProductInStock(productId) {
+            this.tempTableData = []
+            const res = await getProductInStock(productId)
+            if (res.code === RESULT.SUCCESS) {
+                this.tempTableData = res.data
+            } else {
+                message.error(res.message)
+            }
+        }
     },
     computed: {
     },

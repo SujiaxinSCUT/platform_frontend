@@ -37,3 +37,9 @@ export function getOrderedProductAll_api(path) {
     let url = `${ORDER}/${path}`
     return get(url)
 }
+
+export function getProductInStock_api(path) {
+    let url = `${STOCK}/${path}`
+    return get(url)
+}
+

@@ -39,7 +39,19 @@
                             {{statusMapping[tableData[scope.$index]['status']]}}
                         </span>
                     </el-table-column>
-                    <el-table-column label="交易产品"></el-table-column>
+                    <el-table-column label="交易产品">
+                        <el-popover placement="right" trigger="click" slot-scope="scope">
+                            <el-table :data="tempTableData" :max-height="400">
+                                <el-table-column prop="name" label="产品名称" width="80"></el-table-column>
+                                <el-table-column prop="unit" label="单位" width="80"></el-table-column>
+                                <el-table-column prop="price" label="单价" width="80"></el-table-column>
+                                <el-table-column prop="quantity" label="数量" width="80"></el-table-column>
+                            </el-table>
+                            <el-button slot="reference" type="text" size="mini"
+                                       @click="getOrderedProduct(tableData[scope.$index]['orderId'])">
+                                查看</el-button>
+                        </el-popover>
+                    </el-table-column>
                 </el-table>
             </el-main>
             <el-footer>
@@ -57,7 +69,7 @@
 </template>
 
 <script>
-import {getOrder} from "@/service/business";
+import {getOrder, getOrderedProductAll} from "@/service/business";
 import {RESULT} from "@/utils/http";
 const {STATUS_MAPPING} = require("@/model/OrderStatus")
 import {message} from "ant-design-vue";
@@ -78,7 +90,8 @@ export default {
             size: PAGE_SIZE,
             currentPage: 1,
             totalElements: 0,
-            statusMapping: STATUS_MAPPING
+            statusMapping: STATUS_MAPPING,
+            tempTableData: []
         }
     },
     methods: {
@@ -114,6 +127,15 @@ export default {
                 this.loadTableData(page - 1)
             }
         },
+        async getOrderedProduct(orderId) {
+            this.tempTableData = []
+            const res = await getOrderedProductAll(orderId)
+            if (res.code === RESULT.SUCCESS) {
+                this.tempTableData = res.data
+            } else {
+                message.error(res.message)
+            }
+        }
     },
     mounted() {
         this.loadData(0)
