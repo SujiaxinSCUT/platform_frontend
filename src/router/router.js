@@ -12,6 +12,7 @@ import AddStock from "@/components/business/AddStock";
 import QueryUserOrder from "@/views/admin/QueryUserOrder";
 import PriceStatics from "@/views/admin/PriceStatics";
 import ProductTrace from "@/views/admin/ProductTrace";
+import ProductDetails from "@/components/business/ProductDetails";
 
 
 
@@ -64,6 +65,14 @@ const routes = [
                     requireAuth: true
                 },
                 component: MyOrder
+            },
+            {
+                path: "product-details",
+                name: "product-details",
+                meta: {
+                    requireAuth: true
+                },
+                component: ProductDetails
             }
         ]
     },

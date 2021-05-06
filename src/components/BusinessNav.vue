@@ -9,7 +9,7 @@
             </el-menu-item>
             <el-submenu index="2">
                 <span slot="title">
-                   <i class="el-icon-document"></i>
+                   <i class="el-icon-s-order"></i>
                     订单管理
                 </span>
                 <el-menu-item-group>

@@ -1,6 +1,6 @@
 // import qs from "querystring";
 import {get, post} from "@/utils/http";
-import {ORDER, STOCK, GET_CONFIRMING_ORDER} from "@/utils/url";
+import {ORDER, STOCK, GET_CONFIRMING_ORDER, SAVE_STOCK, MATERIAL_STOCK} from "@/utils/url";
 const {SUBMIT_NEW_PRODUCT} = require('@/utils/url')
 
 export function submitNewProduct_api(data) {
@@ -39,6 +39,21 @@ export function getOrderedProductAll_api(path) {
 }
 
 export function getProductInStock_api(path) {
+    let url = `${STOCK}/${path}`
+    return get(url)
+}
+
+export function saveStock_api(data) {
+    let url = SAVE_STOCK
+    return post(url, data)
+}
+
+export function getMaterial_api(path) {
+    let url = `${MATERIAL_STOCK}/${path}`
+    return get(url)
+}
+
+export function getStockPageable_api(path) {
     let url = `${STOCK}/${path}`
     return get(url)
 }

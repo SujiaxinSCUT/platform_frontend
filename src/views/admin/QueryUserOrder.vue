@@ -47,7 +47,7 @@
 <script>
 import {getAllUsername} from "@/service/common";
 import {getOrderPageable} from "@/service/admin";
-const {STATUS_MAPPING} = require("@/model/OrderStatus")
+const {ORDER_STATUS_MAPPING} = require("@/utils/status")
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue";
 const PAGE_SIZE = 10
@@ -68,7 +68,7 @@ export default {
             rules: {
                 username: [{required: true, trigger: 'blur', message: '请选择用户名称'}],
             },
-            statusMapping: STATUS_MAPPING
+            statusMapping: ORDER_STATUS_MAPPING
         }
     },
     methods: {

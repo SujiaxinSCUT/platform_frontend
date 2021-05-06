@@ -71,7 +71,7 @@
 <script>
 import {getOrder, getOrderedProductAll} from "@/service/business";
 import {RESULT} from "@/utils/http";
-const {STATUS_MAPPING} = require("@/model/OrderStatus")
+const {ORDER_STATUS_MAPPING} = require("@/utils/status")
 import {message} from "ant-design-vue";
 
 const PAGE_SIZE = 10
@@ -90,7 +90,7 @@ export default {
             size: PAGE_SIZE,
             currentPage: 1,
             totalElements: 0,
-            statusMapping: STATUS_MAPPING,
+            statusMapping: ORDER_STATUS_MAPPING,
             tempTableData: []
         }
     },

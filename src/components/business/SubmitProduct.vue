@@ -5,28 +5,34 @@
         <el-main>
             <div style="margin-top: 20px;">
                 <el-button type="text" @click="goBackToAddExistProduct" size="mini">返回添加已有商品</el-button>
-                <el-form :model="form" label-position="left" :rules="rules" ref="form"  label-width="100px" >
+                <el-form :model="form" label-position="left" :rules="rules" ref="form"  label-width="80px" inline style="width: 50%">
                     <el-form-item label="产品名称" prop="productName" required>
                         <el-input v-model="form.productName" style="width: 200px" :disabled="loading"></el-input>
                     </el-form-item>
-                    <el-form-item label="单位" prop="unit" required>
+                    <el-form-item label="单位" prop="unit" required  style="position: relative;left: 10%;">
                         <el-input v-model="form.unit" style="width: 50px;" :disabled="loading"></el-input>
                     </el-form-item>
+                </el-form>
+                <el-form :model="form" label-position="left" :rules="rules" ref="form"  label-width="80px" inline style="width: 50%">
                     <el-form-item label="产品描述" prop="description" required>
                         <el-input v-model="form.description" type="textarea" style="width: 200px" :disabled="loading"></el-input>
                     </el-form-item>
+                </el-form>
+                <el-form :model="form" label-position="left" :rules="rules" ref="form"  label-width="80px" inline style="width: 50%">
                     <el-form-item prop="price" label="单价" required>
                         <el-input-number v-model="form.price"
                                          :precision="2" :min="0" :step="0.01" :disabled="loading"
                                          :change="handlePriceChange">
                         </el-input-number>
                     </el-form-item>
-                    <el-form-item prop="quantity" label="数量" required>
+                    <el-form-item prop="quantity" label="数量" required  style="position: relative;left: 13%;">
                         <el-input-number v-model="form.quantity" :precision="2"
                                          :min="0" :step="0.01" :disabled="loading"
                                          :change="handleQuantityChange"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="上传图片"  prop="images" required style="width: 400px">
+                </el-form>
+                <el-form :model="form" label-position="left" :rules="rules" ref="form"  label-width="80px" style="width: 80%" inline>
+                    <el-form-item label="上传图片"  prop="images" required style="width: 336px">
                         <el-upload ref="upload" :limit="3" :show-file-list="true"
                                    :auto-upload="false"
                                    :action="url"
@@ -35,9 +41,31 @@
                                    accept="image/png,image/gif,image/jpg" multiple>
                             <el-button slot="trigger" size="small" type="primary" :disabled="loading">选取图片</el-button>
                             <div slot="tip" class="el-upload__tip" style="margin-top: -10px; margin-bottom: -10px">
-                                只能上传3张以内jpg/png文件且不超过1MB</div>
+                                只能上传3张以内jpg/png图片</div>
 
                         </el-upload>
+                    </el-form-item>
+                    <el-form-item prop="quantity" label="原料" required>
+                        <el-button @click="dialogVisible = true" icon="el-icon-plus">选择原料</el-button>
+                        <el-table :data="batchesAndNumList" height="180" >
+                            <el-table-column label="原料名称" width="100">
+                                    <span  slot-scope="scope">
+                                        {{batchesAndNumList[scope.$index][0]['productName']}}
+                                    </span>
+                            </el-table-column>
+                            <el-table-column label="使用数量" width="100">
+                                    <span  slot-scope="scope">
+                                        {{sum(batchesAndNumList[scope.$index])}}
+                                    </span>
+                            </el-table-column>
+                            <el-table-column label="操作" width="100">
+                                <el-button effect="plain" slot-scope="scope"
+                                           type="danger" icon="el-icon-delete" size="mini"
+                                           @click="deleteOne(batchesAndNumList, scope.$index)"
+                                           circle></el-button>
+                            </el-table-column>
+                        </el-table>
+
                     </el-form-item>
                 </el-form>
             </div>
@@ -47,16 +75,19 @@
             <el-button type="primary" @click="goBack" :loading="loading">返回</el-button>
             <el-button type="primary" @click="submitForm('form')" :loading="loading">提交</el-button>
         </el-footer>
+        <add-material :dialog-visible="dialogVisible" @close="dialogVisible = false" @submit="getBatches"></add-material>
     </el-container>
 
 </template>
 
 <script>
-import {submitNewProduct} from "@/service/business"
+import {saveStock, submitNewProduct} from "@/service/business"
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue"
+import AddMaterial from "@/components/business/AddMaterial";
 export default {
     name: "SubmitProduct",
+    components: {AddMaterial},
     props: [],
     data() {
         var checkNumber = (rule, value, callback) => {
@@ -90,7 +121,9 @@ export default {
                 price: [{validator: checkNumber, trigger: 'blur'}],
             },
             formLabelWidth: '80px',
-            loading: false
+            loading: false,
+            batchesAndNumList: [],
+            dialogVisible: false
         }
     },
     methods: {
@@ -116,6 +149,21 @@ export default {
             let res = await submitNewProduct(productName, description, images, unit, price, quantity)
             if (res.code === RESULT.SUCCESS) {
                 message.success(res.message)
+                let batchList = []
+                for (let i in this.batchesAndNumList) {
+                    let batchesAndNum = this.batchesAndNumList[i]
+                    let batchesForm = {
+
+                    }
+                    for (let j in batchesAndNum) {
+                        batchesForm[batchesAndNum[j]['batchId']] = batchesAndNum[j]['usedNum']
+                    }
+                    batchList.push({
+                        productName: batchesAndNum[0]['productName'],
+                        batchesNumMap: batchesForm
+                    })
+                }
+                this.saveStock(res.data, batchList, productName, unit)
                 this.$refs.upload.clearFiles()
                 this.$refs['form'].resetFields()
                 this.goBack()
@@ -123,6 +171,9 @@ export default {
                 message.error(res.message)
             }
             this.loading = false
+        },
+        saveStock(stock, batchList, productName, unit) {
+            saveStock(stock, batchList, productName, unit)
         },
         handlePriceChange(value) {
             this.form.price = value
@@ -135,6 +186,32 @@ export default {
         },
         goBackToAddExistProduct() {
             this.$emit('go-back')
+        },
+        getBatches(batches) {
+            if (this.matchBatches(batches)) {
+                message.info("已存在该原料")
+                return
+            }
+            this.batchesAndNumList.push(batches)
+        },
+        sum(arr) {
+            let sum = 0
+            for (let i in arr) {
+                sum += arr[i]['usedNum']
+            }
+            return sum
+        },
+        deleteOne(rows, index) {
+            rows.splice(index, 1)
+        },
+        matchBatches(batches) {
+            for (let i in this.batchesAndNumList) {
+                let batch = this.batchesAndNumList[i]
+                if (batch[0]['productName'] === batches[0]['productName']) {
+                    return true
+                }
+            }
+            return false
         }
     },
     computed: {

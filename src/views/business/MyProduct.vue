@@ -23,28 +23,15 @@
                         label="单位"
                         width="100">
                     </el-table-column>
-                    <el-table-column label="描述">
-                        <el-popover placement="right" trigger="click" slot-scope="scope">
-                            <span>{{tableData[scope.$index]['description']}}</span>
-                            <el-button slot="reference" type="text" size="mini">查看</el-button>
-                        </el-popover>
-                    </el-table-column>
                     <el-table-column
                         prop="sum"
                         label="数量">
                     </el-table-column>
                     <el-table-column
-                        label="库存明细">
-                        <el-popover placement="right" trigger="click" slot-scope="scope">
-                            <el-table :data="tempTableData" :max-height="400">
-                                <el-table-column prop="batchId" label="批次号" width="150"></el-table-column>
-                                <el-table-column prop="date" label="进货时间" width="150"></el-table-column>
-                                <el-table-column prop="quantity" label="余量" width="80"></el-table-column>
-                            </el-table>
-                            <el-button slot="reference" type="text" size="mini"
-                                       @click="getProductInStock(tableData[scope.$index]['id'])">
+                        label="明细">
+                            <el-button type="text" size="mini" slot-scope="scope"
+                                       @click="goToProductDetails(tableData[scope.$index])">
                                 查看</el-button>
-                        </el-popover>
                     </el-table-column>
                 </el-table>
             </el-main>
@@ -75,6 +62,7 @@ export default {
     components: {},
     data() {
         return {
+            productDetailsPath: '/business/product-details',
             addStockPath: '/business/add-stock',
             tableData: null,
             submitProductDialogVisible: false,
@@ -110,12 +98,6 @@ export default {
         handleSizeChange(val) {
             console.log(val)
         },
-        handleDesView(index, row) {
-            console.log(index + ' ' + row)
-        },
-        handleSourceView(index, row) {
-            console.log(index + ' ' + row)
-        },
         async getProductInStock(productId) {
             this.tempTableData = []
             const res = await getProductInStock(productId)
@@ -124,6 +106,16 @@ export default {
             } else {
                 message.error(res.message)
             }
+        },
+        goToProductDetails(product) {
+            console.log(product)
+            this.$router.push({name: 'product-details',
+                query: {
+                    productName: product['name'],
+                    productId: product['id'],
+                    productUnit: product['unit'],
+                    productSum: product['sum']
+            }})
         }
     },
     computed: {

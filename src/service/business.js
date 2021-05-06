@@ -4,7 +4,12 @@ import {
     submitNewProduct_api,
     addStock_api,
     getProductsInStock_api,
-    getConfirmingOrder_api, getOrderPageable_api, getOrderedProductAll_api, getProductInStock_api
+    getConfirmingOrder_api,
+    getOrderPageable_api,
+    getOrderedProductAll_api,
+    getProductInStock_api,
+    saveStock_api,
+    getMaterial_api, getStockPageable_api
 } from "@/api/business";
 import {userDetailsStorage} from "@/utils/request";
 
@@ -14,7 +19,7 @@ export async function submitNewProduct(name, description, images, unit, price, q
     data.append('name', name)
     data.append('description', description)
     data.append('unit', unit)
-    data.append('submitterId', userDetails['id'])
+    data.append('submitterId', userDetails['name'])
     data.append('price', price)
     data.append('quantity', quantity)
     for (let i in images) {
@@ -26,7 +31,7 @@ export async function submitNewProduct(name, description, images, unit, price, q
     let message
     let res_data
     if (res.status) {
-        if (res.status === HTTP.CREATED) {
+        if (res.status === HTTP.OK) {
             code = RESULT.SUCCESS
             res_data = res.data
             message = "提交成功"
@@ -49,19 +54,20 @@ export async function submitNewProduct(name, description, images, unit, price, q
     }
 }
 
-export async function addStock(productId, quantity, price) {
+export async function addStock(productId, quantity, price, unit) {
     let userDetails = userDetailsStorage.get()
     let data = new FormData()
     data.append('productId', productId)
     data.append('quantity', quantity)
     data.append('price', price)
-    data.append('accountId', userDetails['id'])
+    data.append('accountName', userDetails['name'])
+    data.append('unit', unit)
     const res = await addStock_api(data)
     let code
     let message
     let res_data
     if (res.status) {
-        if (res.status === HTTP.CREATED) {
+        if (res.status === HTTP.OK) {
             code = RESULT.SUCCESS
             res_data = res.data
             message = "提交成功"
@@ -130,6 +136,34 @@ export async function getAllProductsInStock() {
     } else if (res.response){
         code = RESULT.FAILED
         message = "获取产品列表失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function getProductsInStock(productId) {
+    const res = await getProductsInStock_api(`/product_id/${productId}`)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+            message = ""
+        } else {
+            code = RESULT.FAILED
+            message = "获取批次列表失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取批次列表失败"
     } else {
         code = RESULT.FAILED
         message = "网络出错，请稍后再试"
@@ -288,6 +322,112 @@ export async function getProductInStock(productId) {
     } else if (res.response){
         code = RESULT.FAILED
         message = "获取商品列表失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function saveStock(stock, batchList, productName, unit) {
+    let userDetails = userDetailsStorage.get()
+    let clientKey = localStorage.getItem("keyFileOf" + userDetails['name'])
+    let clientCrt = localStorage.getItem("crtFileOf" + userDetails['name'])
+    // let data = new FormData()
+    // data.append('stock', JSON.stringify(stock))
+    // data.append('batchList', JSON.stringify(batchList))
+    // data.append('productName', productName)
+    // data.append('unit', unit)
+    // data.append('clientKey', clientKey)
+    // data.append('clientCrt', clientCrt)
+
+    let data = {
+        stock: stock,
+        batchList: batchList,
+        productName: productName,
+        unit: unit,
+        clientKey: clientKey,
+        clientCrt: clientCrt
+    }
+
+    const res = await saveStock_api(data)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+            message = "提交成功"
+        } else {
+            code = RESULT.FAILED
+            message = res.data
+        }
+    } else if (res.response){
+        const response = res.response
+        code = RESULT.FAILED
+        message = response.data
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function getMaterial(page, size, productName, type) {
+    let path = `product_name/${productName}/type/${type}/pageable/${page}/${size}`
+    const res = await getMaterial_api(path)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+        } else {
+            code = RESULT.FAILED
+            message = "获取失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+
+export async function getStockOfProductPageable(productId, page, size) {
+    let path = `product_id/${productId}/pageable/${page}/${size}`
+    const res = await getStockPageable_api(path)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+        } else {
+            code = RESULT.FAILED
+            message = "获取批次列表失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取批次列表失败"
     } else {
         code = RESULT.FAILED
         message = "网络出错，请稍后再试"
