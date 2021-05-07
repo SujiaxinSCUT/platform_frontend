@@ -175,10 +175,10 @@ export async function getProductsInStock(productId) {
     }
 }
 
-export async function createOrder(supplierName, date, products) {
+export async function createOrder(supplierName, products, privateKey) {
     let data = {
         supplierName: supplierName,
-        date: date,
+        privateKey: privateKey,
         products: products
     }
     const res = await createOrder_api(data)

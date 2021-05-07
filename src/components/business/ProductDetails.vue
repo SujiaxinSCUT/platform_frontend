@@ -18,26 +18,29 @@
                                 <div style="width: 60px;">{{form.sum}}</div>
                             </el-form-item>
                             <el-form-item prop="batchNum" label="批次数量" style="position: relative;left: 40%;">
-                                <label>{{form.batchNum}}</label>
+                                <label>{{totalElements}}</label>
                             </el-form-item>
                         </el-form>
                         <el-form :model="form" ref="form" :inline="true"
-                                 label-position="left" :hide-required-asterisk="true" label-width="90px" style="width: 80%">
+                                 label-position="left" :hide-required-asterisk="true" label-width="90px" style="width: 80%;">
                             <el-form-item prop="batchList" label="批次记录">
                                 <el-table :data="form.batchList" border height="300px">
                                     <el-table-column prop="batchId" label="批次号" width="200"></el-table-column>
                                     <el-table-column prop="date" label="进货时间" width="200"></el-table-column>
                                     <el-table-column prop="quantity" label="余量" width="80"></el-table-column>
                                     <el-table-column prop="status" label="状态" width="80">
-                                        <span slot-scope="scope">{{mapping[form.batchList[scope.$index]['status']]}}</span>
+                                        <el-tag slot-scope="scope" :type="mapping[form.batchList[scope.$index]['status']].type" size="small">
+                                            {{mapping[form.batchList[scope.$index]['status']].value}}
+                                        </el-tag>
                                     </el-table-column>
                                 </el-table>
                                 <el-pagination
                                     @current-change="handleCurrentChange"
                                     :current-page.sync="currentPage"
                                     :page-size="size"
-                                    :total="form.totalElements"
+                                    :total="totalElements"
                                     layout="total, prev, pager, next, jumper"
+                                    style="margin-top: 20px;"
                                 >
                                 </el-pagination>
                             </el-form-item>
@@ -73,12 +76,13 @@ export default {
             form: {
                 name: this.$route.query.productName,
                 unit: this.$route.query.productUnit,
-                sum: this.$route.query.productSum,
-                totalElements: 0,
+                sum: 0,
+
                 batchList: []
             },
             productId: this.$route.query.productId,
             size: PAGE_SIZE,
+            totalElements: 0,
             currentPage: 1,
             mapping: STOCK_STATUS_MAPPING
         }
@@ -91,7 +95,14 @@ export default {
             let res = await getStockOfProductPageable(this.productId, page, this.size)
             if (res.code === RESULT.SUCCESS) {
                 this.form.batchList = res.data['contents']
-                this.form.totalElements = res.data['totalElements']
+                this.totalElements = res.data['totalElements']
+                this.form.sum = 0
+                for (let i in this.form.batchList) {
+                    let batch = this.form.batchList[i]
+                    if (batch['status'] === 'free' || batch['status'] === 'on_transaction') {
+                        this.form.sum += batch['quantity']
+                    }
+                }
             } else {
                 message.error(res.message)
             }
@@ -104,6 +115,8 @@ export default {
     },
     mounted() {
         this.loadTable(0)
+    },
+    watch: {
     }
 }
 </script>

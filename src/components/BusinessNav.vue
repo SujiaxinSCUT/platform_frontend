@@ -30,6 +30,12 @@
                     </el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
+            <el-menu-item index="3">
+                <router-link :to="secretAndKeyPath" tag="div" slot="title">
+                    <i class="el-icon-key"></i>
+                    <span> 证书管理</span>
+                </router-link>
+            </el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -42,7 +48,8 @@ export default {
             myProductPath: '/business/my-product',
             submitSalesOrderPath: '/business/submit-sales-order',
             submitPurchaseOrderPath: '/business/submit-purchasing-order',
-            historyOrderPath: '/business/my-order'
+            historyOrderPath: '/business/my-order',
+            secretAndKeyPath: '/business/secret-key'
         }
     }
 }

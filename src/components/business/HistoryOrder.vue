@@ -13,6 +13,7 @@
                             placeholder="开始日期"
                             @change="loadData(0)">
                         </el-date-picker>
+                        <span> - </span>
                         <el-date-picker
                             v-model="form.endDate"
                             type="datetime"
@@ -20,12 +21,15 @@
                             @change="loadData(0)">
                         </el-date-picker>
                     </el-form-item>
-                    <el-form-item prop="username" label="交易方名称">
+
+                </el-form>
+                <el-form :inline="true" :model="form" label-width="100px">
+                    <el-form-item prop="username" :label="usernameLabel">
                         <el-input v-model="form.username" @change="loadData(0)"></el-input>
                     </el-form-item>
                     <el-form-item prop="type" style="margin-left: 30px">
-                            <el-radio v-model="form.type" label="1" @change="loadData(0)">销售订单</el-radio>
-                            <el-radio v-model="form.type" label="2" @change="loadData(0)">进货订单</el-radio>
+                        <el-radio v-model="type" label="1" @change="loadData(0)">销售订单</el-radio>
+                        <el-radio v-model="type" label="2" @change="loadData(0)">进货订单</el-radio>
                     </el-form-item>
                 </el-form>
                 <el-divider></el-divider>
@@ -33,11 +37,11 @@
                     <el-table-column prop="orderId" label="订单号"></el-table-column>
                     <el-table-column prop="date" label="交易时间"></el-table-column>
                     <el-table-column prop="type" label="订单类型"></el-table-column>
-                    <el-table-column prop="username" label="交易方名称"></el-table-column>
+                    <el-table-column prop="username" :label="usernameLabel"></el-table-column>
                     <el-table-column prop="status" label="订单状态">
-                        <span slot-scope="scope">
-                            {{statusMapping[tableData[scope.$index]['status']]}}
-                        </span>
+                        <el-tag slot-scope="scope" :type="statusMapping[tableData[scope.$index]['status']].type" size="small">
+                            {{statusMapping[tableData[scope.$index]['status']].value}}
+                        </el-tag>
                     </el-table-column>
                     <el-table-column label="交易产品">
                         <el-popover placement="right" trigger="click" slot-scope="scope">
@@ -84,14 +88,16 @@ export default {
                 startDate: '',
                 endDate: '',
                 username: '',
-                type: '2'
+
             },
             tableData: [],
+            type: '2',
             size: PAGE_SIZE,
             currentPage: 1,
             totalElements: 0,
             statusMapping: ORDER_STATUS_MAPPING,
-            tempTableData: []
+            tempTableData: [],
+            usernameLabel: this.type === '1' ? '客户名称' : '供应商名称',
         }
     },
     methods: {
@@ -101,7 +107,7 @@ export default {
                 startDate: this.form.startDate,
                 endDate: this.form.endDate,
                 username: this.form.username,
-                salesOrder: this.form.type === "1" ? true : false
+                salesOrder: this.type === "1" ? true : false
             }
             let res = await getOrder(page, this.size, post_data)
             if (res.code === RESULT.SUCCESS) {
@@ -139,6 +145,11 @@ export default {
     },
     mounted() {
         this.loadData(0)
+    },
+    watch: {
+        type(newVal) {
+            this.usernameLabel = newVal == '1' ? '客户名称' : '供应商名称'
+        }
     }
 }
 </script>

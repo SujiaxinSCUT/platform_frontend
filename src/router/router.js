@@ -13,6 +13,7 @@ import QueryUserOrder from "@/views/admin/QueryUserOrder";
 import PriceStatics from "@/views/admin/PriceStatics";
 import ProductTrace from "@/views/admin/ProductTrace";
 import ProductDetails from "@/components/business/ProductDetails";
+import UploadView from "@/components/UploadView";
 
 
 
@@ -73,6 +74,13 @@ const routes = [
                     requireAuth: true
                 },
                 component: ProductDetails
+            },
+            {
+                path: "secret-key",
+                meta: {
+                    requireAuth: true
+                },
+                component: UploadView
             }
         ]
     },
