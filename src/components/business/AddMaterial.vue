@@ -40,6 +40,7 @@
 import {getAllProductsInStock, getProductsInStock} from "@/service/business";
 import {RESULT} from "@/utils/http";
 import {message} from "ant-design-vue";
+import {userDetailsStorage} from "@/utils/request";
 
 export default {
     name: "AddMaterial",
@@ -99,7 +100,8 @@ export default {
             cb(results)
         },
         async getProductList() {
-            let res = await getAllProductsInStock()
+            let userDetails = userDetailsStorage.get()
+            let res = await getAllProductsInStock(userDetails['name'])
             if (res.code === RESULT.SUCCESS) {
                 this.productList = res.data
             } else {

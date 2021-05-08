@@ -1,5 +1,5 @@
 <template>
-    <div id="OrderDetail">
+    <div id="CheckingOrderDetail">
         <ul>
             <el-card style="width: 1000px;">
                 <el-form label-width="100px">
@@ -69,9 +69,10 @@
 import {message} from "ant-design-vue"
 import {RESULT} from "@/utils/http";
 import {getAllProductsInStock} from "@/service/business";
+import {userDetailsStorage} from "@/utils/request";
 
 export default {
-    name: "OrderDetail",
+    name: "CheckingOrderDetail",
     props: ['index', 'product'],
     data() {
         return {
@@ -99,7 +100,8 @@ export default {
             };
         },
         async getStock() {
-            let res = await getAllProductsInStock()
+            let userDetails = userDetailsStorage.get()
+            let res = await getAllProductsInStock(userDetails['name'])
             if (res.code === RESULT.SUCCESS) {
                 this.batchList = res.data
             } else {

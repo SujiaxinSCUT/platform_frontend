@@ -1,12 +1,12 @@
 <template>
-    <div id="OrderDetails">
+    <div id="CheckingOrderDetails">
         <el-container>
             <el-page-header @back="goBack" content="详情页面">
             </el-page-header>
             <el-main>
-                <order-detail v-for="(product, index) in productList" :index="index"
+                <checking-order-detail v-for="(product, index) in productList" :index="index"
                               :product="product" :key="index" @update-batch="updateBatch">
-                </order-detail>
+                </checking-order-detail>
             </el-main>
             <el-footer>
                 <el-button type="primary" @click="goBack">返回</el-button>
@@ -19,13 +19,13 @@
 </template>
 
 <script>
-import OrderDetail from "@/components/business/OrderDetail";
 import {getOrderedProductAll} from "@/service/business";
 import {message} from "ant-design-vue";
 import {RESULT} from "@/utils/http";
+import CheckingOrderDetail from "@/components/business/CheckingOrderDetail";
 export default {
-    name: "OrderDetails",
-    components: {OrderDetail},
+    name: "CheckingOrderDetails",
+    components: {CheckingOrderDetail},
     props: [],
     data() {
         return {

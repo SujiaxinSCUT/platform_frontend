@@ -1,6 +1,7 @@
 import axios from "axios";
 import {ExpiresStorage} from "@/model/ExpireStorage";
 
+
 export const userDetailsStorage = new ExpiresStorage("user_details")
 
 const service = axios.create({
@@ -12,6 +13,7 @@ service.interceptors.request.use(
         let userDetails = userDetailsStorage.get()
         if (userDetails) {
             config.headers['Authorization'] = `Bearer ${userDetails['access_token']}` || ''
+
         }
         return config
     },

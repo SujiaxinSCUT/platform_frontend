@@ -23,7 +23,8 @@
     "element-ui": "^2.15.1",
     "axios": "^0.21.1",
     "ant-design-vue": "^1.7.4",
-    "qs": "^6.10.0"
+    "qs": "^6.10.0",
+    "less-loader": "^8.1.1"
   },
   "eslintConfig": {
     "root": true,

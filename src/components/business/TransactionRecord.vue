@@ -9,9 +9,9 @@
                     <el-table-column prop="date" label="交易时间"></el-table-column>
                     <el-table-column prop="username" :label="username" width="100"></el-table-column>
                     <el-table-column prop="status" label="订单状态" width="100">
-                        <span slot-scope="scope">
-                            {{statusMapping[tableData[scope.$index]['status']]}}
-                        </span>
+                        <el-tag slot-scope="scope" :type="statusMapping[tableData[scope.$index]['status']].type" size="small">
+                            {{statusMapping[tableData[scope.$index]['status']].value}}
+                        </el-tag>
                     </el-table-column>
                     <el-table-column label="订单详情" width="100"></el-table-column>
                 </el-table>

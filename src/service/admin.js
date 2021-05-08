@@ -1,8 +1,26 @@
 
 import {HTTP, RESULT} from "@/utils/http";
 import {getOrdersPageable_api} from "@/api/admin";
+import {userDetailsStorage} from "@/utils/request";
+import {router} from "@/router/router";
 
+function getUserDetails() {
+    let userDetails = userDetailsStorage.get()
+    if (!userDetails) {
+        alert("未登录或登录过期")
+        router.push('/login')
+    }
+    return userDetails
+}
 export async function getOrderPageable(username, page, size) {
+    let userDetails = getUserDetails()
+    if (!userDetails) {
+        return {
+            code: RESULT.FAILED,
+            message: '登录过期',
+            data: null
+        }
+    }
     let path = `username/${username}/pageable/${page}/${size}`
     const res = await getOrdersPageable_api(path)
     let code

@@ -1,7 +1,17 @@
 import {HTTP, RESULT} from "@/utils/http";
 import {getAllUsername_api, getUserDetails_api, login_api} from "@/api/common";
 import {getAllProducts_api} from "@/api/common";
+import {userDetailsStorage} from "@/utils/request";
+import {router} from "@/router/router";
 
+function getUserDetail() {
+    let userDetails = userDetailsStorage.get()
+    if (!userDetails) {
+        alert("未登录或登录过期")
+        router.push('/login')
+    }
+    return userDetails
+}
 export async function login(username, password, isUser) {
     const res = await login_api(username, password, isUser)
     let code
@@ -59,6 +69,14 @@ export async function getUserDetails(username) {
 }
 
 export async function getAllUsername() {
+    let userDetails = getUserDetail()
+    if (!userDetails) {
+        return {
+            code: RESULT.FAILED,
+            message: '登录过期',
+            data: null
+        }
+    }
     const res = await getAllUsername_api()
     let code
     let message
