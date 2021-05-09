@@ -2,7 +2,7 @@
     <div id="CheckOrder">
         <el-container>
             <el-main>
-                <el-table :data="tableData" style="width: 600px">
+                <el-table :data="tableData" style="width: 600px" height="400" border>
                     <el-table-column
                         prop="orderId"
                         label="订单号"

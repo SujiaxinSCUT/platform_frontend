@@ -1,39 +1,34 @@
 <template>
     <div id="CreateOrder">
         <el-container>
-            <el-divider>创建订单</el-divider>
+            <el-divider content-position="left">创建订单</el-divider>
             <el-main>
                 <el-form :model="form" label-width="120px" :rules="rules" ref="form" :disabled="loading" style="width: 80%">
                     <el-form-item prop="clientName" label="供应商名称" class="client-name">
-                        <el-autocomplete placeholder="选择商户" v-model="form.clientName"
+                        <el-autocomplete placeholder="选择商户" v-model="form.clientName" @clear="clear"
                                          :fetch-suggestions="querySearchAsync2" :disabled="loading" clearable></el-autocomplete>
                     </el-form-item>
 
                     <el-form-item
                         v-for="(product, index) in form.products"
                         :label="'产品' + index"
-                        :key="product.key"
-                        :prop="'products.' + index + '.value'"
+                        :key="product.id"
+                        :prop="'products.' + index"
                         :rules="{
-                            required: true, message: '产品不能为空', trigger: 'blur'
+                            validator: checker, trigger: 'blur'
                         }" class="product">
-                        <el-autocomplete placeholder="选择产品" v-model="product.name"
-                                         :fetch-suggestions="querySearchAsync" @select="handleSelect"
-                                         @change="clear" :disabled="loading" clearable :disable="form.clientName === ''"
-                        ></el-autocomplete>
+                        <el-autocomplete placeholder="选择产品" v-model="product.value"
+                                         :fetch-suggestions="querySearchAsync" @select="handleSelect(index)"
+                                         :disabled="loading" clearable></el-autocomplete>
 
                         <el-input-number v-model="product.price" placeholder="单价"
-                                         :precision="2" :min="0" :step="0.01" :disabled="loading"
-                                         :change="handlePriceChange">
+                                         :precision="2" :min="0" :step="0.01" :disabled="loading" @change="handlePriceChange">
                         </el-input-number>
+
                         <el-input-number v-model="product.txNum" placeholder="数量"
-                                         :precision="2" :min="0" :step="0.01" :disabled="loading" :max="product.sum"
-                                         :change="handleQuantityChange">
+                                         :precision="2" :min="0" :step="0.01" :disabled="loading" :max="product.sum" @change="handleQuantityChange">
                         </el-input-number>
                         <el-button @click.prevent="removeProduct(index)">删除</el-button>
-                    </el-form-item>
-                    <el-form-item prop="totalPrice" label="总价">
-                    {{form.totalPrice}}
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="submitForm('form')">提交</el-button>
@@ -43,17 +38,13 @@
                 </el-form>
             </el-main>
             <el-footer>
-                <el-button type="primary" @click="submitForm('form')" :loading="loading">提交</el-button>
+
             </el-footer>
         </el-container>
-        <add-product :dialog-visible="addProductDialogVisible"
-                     :parent-type="parentType" @close-dialog="closeAddProductDialog"
-                    @add-product-item="addProduct"/>
     </div>
 </template>
 
 <script>
-import AddProduct from "@/components/business/AddProduct";
 import {createOrder, getAllProductsInStock} from "@/service/business";
 import {message} from "ant-design-vue"
 import {RESULT} from "@/utils/http";
@@ -65,17 +56,21 @@ const {PARENT_TYPE} = require('@/utils/business_const');
 
 export default {
     name: "CreateOrder",
-    components: {AddProduct},
+    components: {},
     props: ['isSalesOrder'],
     data() {
-        var checkNumber = (rule, value, callback) => {
+        var productChecker = (rule, value, callback) => {
             if (!value) {
                 return callback(new Error("此项不能为空"))
             }
-            if (parseFloat(value).toString() === 'NaN') {
-                callback(new Error("请输入数字"))
-            } else if (value <= 0){
-                callback(new Error("此项必须大于0"))
+            if (!value['value'] || value['value'] == '') {
+                callback(new Error("请选择产品"))
+            } else if (value['txNum'] <= 0){
+                callback(new Error("交易数量必须大于0"))
+            } else if (value['txNum'] > value['sum']) {
+                callback(new Error("交易数量不能大于供应商库存"))
+            } else if (value['price'] <= 0) {
+                callback(new Error("价格必须大于0"))
             } else {
                 callback()
             }
@@ -86,16 +81,16 @@ export default {
             form: {
                 clientName: '',
                 products: [{value: ''}],
-                totalPrice: 0
             },
             rules: {
                 clientName: [{required: true, trigger: 'blur', message: '请输入供货商名称'}],
-                totalPrice: [{validator: checkNumber, trigger: 'blur'}],
+
             },
             productList: null,
             loading: false,
             usernames: null,
-            selfName: userDetailsStorage.get().name
+            selfName: userDetailsStorage.get().name,
+            checker: productChecker
         }
     },
     methods: {
@@ -119,12 +114,12 @@ export default {
         async submitOrder() {
             this.loading = true
             let data = []
-            for (let i in this.tableData) {
-                let item = this.tableData[i]
+            for (let i in this.form.products) {
+                let item = this.form.products[i]
                 data.push({
-                    productId: item['product']['id'],
+                    productId: item['id'],
                     price: item['price'],
-                    quantity: item['quantity']
+                    quantity: item['txNum']
                 })
             }
             let res = await createOrder(this.form.clientName, data)
@@ -138,10 +133,11 @@ export default {
         },
         clear() {
             this.$refs['form'].resetFields()
-            this.tableData = []
+            this.productList = null
+            this.form.products = [{value: ''}]
         },
         removeProduct(index) {
-            if (index !== -1) {
+            if (index > 0) {
                 this.form.products.splice(index, 1)
             }
         },
@@ -149,26 +145,33 @@ export default {
             this.form.products.push({
                 value: '',
                 key: Date.now(),
-                txNum: 0,
-                quantity: 0
             });
         },
         async querySearchAsync(queryString, cb) {
-            if (!this.productList) {
+            if (!this.productList && this.form.clientName != '') {
                 await this.getProductList()
             }
             let productList = this.productList ? this.productList : []
             let results = queryString ? productList.filter(this.createStateFilter(queryString)) : productList
+            let filterResults = []
             for (let i in results) {
                 let result = results[i]
-                result['value'] = `${result.name}(${result.description})`
-                result['txNum'] = 0
+                result['value'] = `${result.name}(余量：${result.sum}   描述：${result.description})`
+                let contains = false
+                for (let i in this.form.products) {
+                    if (result['value'] === this.form.products[i]['value']) {
+                        contains = true
+                        break
+                    }
+                }
+                if (!contains) {
+                    filterResults.push(result)
+                }
             }
-            cb(results)
+            cb(filterResults)
         },
         async getProductList() {
             let res = await getAllProductsInStock(this.form.clientName)
-            console.log(res)
             if (res.code === RESULT.SUCCESS) {
                 this.productList = res.data
             } else {
@@ -180,8 +183,18 @@ export default {
                 return (product.name.toLowerCase().indexOf(queryString.toLowerCase()) >= 0);
             };
         },
-        handleSelect(item) {
-            console.log(item)
+        handleSelect(index) {
+            let currPro = this.form.products[index]
+            for (let i in this.productList) {
+                let pro = this.productList[i]
+                if (currPro['value'] === pro['value']) {
+                    currPro['price'] = 0
+                    currPro['txNum'] = 0
+                    currPro['name'] = pro['name']
+                    currPro['id'] = pro['id']
+                    currPro['sum'] = pro['sum']
+                }
+            }
         },
         handlePriceChange(value) {
             console.log(value)

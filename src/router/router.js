@@ -14,6 +14,7 @@ import PriceStatics from "@/views/admin/PriceStatics";
 import ProductTrace from "@/views/admin/ProductTrace";
 import ProductDetails from "@/components/business/ProductDetails";
 import UploadView from "@/components/UploadView";
+import PersonalOrders from "@/components/business/PersonalOrders";
 
 
 
@@ -25,6 +26,13 @@ const routes = [
         component: Business,
         meta: { requireAuth: true },
         children: [
+            {
+                path: "my-order",
+                meta: {
+                    requireAuth: true
+                },
+                component: PersonalOrders
+            },
             {
                 path: "my-product",
                 meta: {
@@ -61,7 +69,7 @@ const routes = [
                 component: SubmitPurchaseOrder
             },
             {
-                path: "my-order",
+                path: "history-order",
                 meta: {
                     requireAuth: true
                 },

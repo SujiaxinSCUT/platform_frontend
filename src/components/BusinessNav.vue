@@ -14,16 +14,21 @@
                 </span>
                 <el-menu-item-group>
                     <el-menu-item index="2-1">
+                        <router-link :to="myOrderPath" tag="div" slot="title">
+                            <span>我的订单</span>
+                        </router-link>
+                    </el-menu-item>
+                    <el-menu-item index="2-2">
                         <router-link :to="submitPurchaseOrderPath" tag="div" slot="title">
                             <span>创建订单</span>
                         </router-link>
                     </el-menu-item>
-                    <el-menu-item index="2-2">
+                    <el-menu-item index="2-3">
                         <router-link :to="submitSalesOrderPath" tag="div" slot="title">
                             <span>核对订单</span>
                         </router-link>
                     </el-menu-item>
-                    <el-menu-item index="2-3">
+                    <el-menu-item index="2-4">
                         <router-link :to="historyOrderPath" tag="div" slot="title">
                             <span>历史订单</span>
                         </router-link>
@@ -46,9 +51,10 @@ export default {
     data() {
         return {
             myProductPath: '/business/my-product',
+            myOrderPath: '/business/my-order',
             submitSalesOrderPath: '/business/submit-sales-order',
             submitPurchaseOrderPath: '/business/submit-purchasing-order',
-            historyOrderPath: '/business/my-order',
+            historyOrderPath: '/business/history-order',
             secretAndKeyPath: '/business/secret-key'
         }
     }
