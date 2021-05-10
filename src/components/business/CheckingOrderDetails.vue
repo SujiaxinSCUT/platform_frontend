@@ -37,7 +37,7 @@ export default {
     },
     methods: {
         goBack() {
-            this.$router.push('/business/submit-sales-order')
+            this.$router.push('/business/my-order')
         },
         updateBatch(data) {
             this.productList[data['index']]['batch'] = data['batch']

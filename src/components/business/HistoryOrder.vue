@@ -141,7 +141,8 @@ export default {
             } else {
                 message.error(res.message)
             }
-        }
+        },
+
     },
     mounted() {
         this.loadData(0)

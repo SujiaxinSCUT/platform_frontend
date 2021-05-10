@@ -9,7 +9,7 @@ import {
     getOrderedProductAll_api,
     getProductInStock_api,
     saveStock_api,
-    getMaterial_api, getStockPageable_api
+    getMaterial_api, getStockPageable_api, getPersonalOrders_api
 } from "@/api/business";
 import {userDetailsStorage} from "@/utils/request";
 import {router} from "@/router/router";
@@ -593,6 +593,41 @@ export async function getStockOfProductPageable(productId, page, size) {
     } else if (res.response){
         code = RESULT.FAILED
         message = "获取批次列表失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function getPersonalOrders() {
+    let userDetails = getUserDetails()
+    if (!userDetails) {
+        return {
+            code: RESULT.FAILED,
+            message: '登录过期',
+            data: null
+        }
+    }
+    const res = await getPersonalOrders_api()
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+        } else {
+            code = RESULT.FAILED
+            message = "获取订单信息失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取订单信息失败"
     } else {
         code = RESULT.FAILED
         message = "网络出错，请稍后再试"

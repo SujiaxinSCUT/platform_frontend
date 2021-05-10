@@ -58,3 +58,8 @@ export function getStockPageable_api(path) {
     return get(url)
 }
 
+export function getPersonalOrders_api() {
+    let url = `${ORDER}/personal`
+    return get(url)
+}
+

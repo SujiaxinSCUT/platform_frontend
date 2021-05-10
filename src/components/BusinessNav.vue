@@ -23,12 +23,12 @@
                             <span>创建订单</span>
                         </router-link>
                     </el-menu-item>
+<!--                    <el-menu-item index="2-3">-->
+<!--                        <router-link :to="submitSalesOrderPath" tag="div" slot="title">-->
+<!--                            <span>核对订单</span>-->
+<!--                        </router-link>-->
+<!--                    </el-menu-item>-->
                     <el-menu-item index="2-3">
-                        <router-link :to="submitSalesOrderPath" tag="div" slot="title">
-                            <span>核对订单</span>
-                        </router-link>
-                    </el-menu-item>
-                    <el-menu-item index="2-4">
                         <router-link :to="historyOrderPath" tag="div" slot="title">
                             <span>历史订单</span>
                         </router-link>
