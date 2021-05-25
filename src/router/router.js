@@ -3,7 +3,6 @@ import Login from "@/views/login/Login";
 import Business from "@/views/business/Business";
 import Admin from "@/views/admin/Admin";
 import {userDetailsStorage} from "@/utils/request";
-import MyProduct from "@/views/business/MyProduct";
 import SubmitSalesOrder from "@/views/business/SubmitSalesOrder";
 import SubmitPurchaseOrder from "@/views/business/SubmitPurchaseOrder";
 import CheckingOrderDetails from "@/components/business/CheckingOrderDetails";
@@ -15,6 +14,7 @@ import ProductTrace from "@/views/admin/ProductTrace";
 import ProductDetails from "@/components/business/ProductDetails";
 import UploadView from "@/components/UploadView";
 import PersonalOrders from "@/components/business/PersonalOrders";
+import PersonalProducts from "@/components/business/PersonalProducts";
 
 
 
@@ -38,7 +38,7 @@ const routes = [
                 meta: {
                     requireAuth: true
                 },
-                component: MyProduct
+                component: PersonalProducts
             },
             {
                 path: "add-stock",
@@ -117,6 +117,13 @@ const routes = [
                 },
                 component: ProductTrace
             },
+            {
+                path: "secret-key",
+                meta: {
+                    requireAuth: true
+                },
+                component: UploadView
+            }
         ]
     }
 ]
@@ -173,8 +180,9 @@ function pathMatch(path, user_type) {
         'admin',
         'query-order',
         'price-statics',
-        'product-trace'
+        'product-trace',
     ]
+    console.log(path)
     if ((user_type === 'business' && business_path.includes(path))
         || (user_type === 'admin' && admin_path.includes(path))) {
         return true

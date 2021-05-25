@@ -24,7 +24,8 @@
     "axios": "^0.21.1",
     "ant-design-vue": "^1.7.4",
     "qs": "^6.10.0",
-    "less-loader": "^8.1.1"
+    "less-loader": "^8.1.1",
+    "vis": "^4.21.0-EOL"
   },
   "eslintConfig": {
     "root": true,

@@ -7,12 +7,12 @@
                     <el-row :gutter="30">
                         <el-col :span="9">
                             <el-form-item label="产品名称:">
-                                {{product.name}}
+                                {{orderedProduct.name}}
                             </el-form-item>
                         </el-col>
                         <el-col :span="9">
                             <el-form-item label="单位:">
-                                {{product.unit}}
+                                {{orderedProduct.unit}}
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -22,12 +22,12 @@
                     <el-row :gutter="30">
                         <el-col :span="9">
                             <el-form-item label="单价:">
-                                {{product.price}}
+                                {{orderedProduct.price}}
                             </el-form-item>
                         </el-col>
                         <el-col :span="9">
                             <el-form-item label="数量:">
-                                {{product.quantity}}
+                                {{orderedProduct.quantity}}
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -36,7 +36,7 @@
                 <el-form label-width="100px" inline style="width: 100%">
                         <el-form-item :label="'批次' + index" v-for="(batch, index) in batches"
                                       :key="batch.batchId" style="width: 100%">
-                                <el-select v-model="batch.batchId" placeholder="请选择">
+                                <el-select v-model="batch.batchId" placeholder="请选择" @change="change(index, batch.batchId)">
                                     <el-option
                                         v-for="item in batchList"
                                         :key="item.batchId"
@@ -48,8 +48,8 @@
                                         </span>
                                     </el-option>
                                 </el-select>
-                                <el-input-number v-model="batch.transactionNumber" placeholder="数量" style="width: 150px; margin-left: 10px;margin-right: 10px;"
-                                                 :precision="2" :min="0" :step="0.01" :disabled="loading" :max="batch.quantity">
+                                <el-input-number @change="updateBatch" v-model="batch.transactionNumber" placeholder="数量" style="width: 150px; margin-left: 10px;margin-right: 10px;"
+                                                 :precision="2" :min="0" :step="0.01" :disabled="loading" :max="batch.restQuantity > orderedProduct.quantity ? orderedProduct.quantity : batch.restQuantity">
                                 </el-input-number>
                                 <el-button @click.prevent="removeBatch(index)">删除</el-button>
                         </el-form-item>
@@ -67,39 +67,32 @@
 <script>
 import {message} from "ant-design-vue"
 import {RESULT} from "@/utils/http";
-import {getAllProductsInStock, getProductsInStock} from "@/service/business";
-import {userDetailsStorage} from "@/utils/request";
+import {getProductsInStock} from "@/service/business";
 
 export default {
     name: "CheckingOrderDetail",
-    props: ['index', 'product'],
+    props: ['index', 'orderedProduct'],
     data() {
         return {
             batchList: null,
             batches: [{}],
             loading: false,
+            selectedBatches: {}
         }
     },
     methods: {
-        async getStock() {
-            let userDetails = userDetailsStorage.get()
-            let res = await getAllProductsInStock(userDetails['name'])
-            if (res.code === RESULT.SUCCESS) {
-                this.batchList = res.data
-            } else {
-                message.error(res.message)
-            }
-        },
         updateBatch() {
-            let data = {
-                index: this.index,
-                batch: this.tableData
+            let batches = {}
+            for (let i in this.batches) {
+                if (this.batches[i]['batchId']) {
+                    batches[this.batches[i]['batchId']] = this.batches[i]['transactionNumber'] ? this.batches[i]['transactionNumber'] : 0
+                }
             }
-            this.$emit('update-batch', data)
+            this.selectedBatches.batches = batches
+            this.$emit('update-batch', this.selectedBatches)
         },
         async getBatches(productId) {
             let res = await getProductsInStock(productId)
-            console.log(res)
             if (res.code === RESULT.SUCCESS) {
                 let batchList = res.data
                 this.batchList = []
@@ -108,10 +101,10 @@ export default {
                         transactionNumber: 0,
                         batchId: batchList[i]['batchId'],
                         quantity: batchList[i]['quantity'],
+                        restQuantity: batchList[i]['restQuantity'],
                         date: batchList[i]['date']
                     })
                 }
-                console.log(this.batchList)
             } else {
                 message.error(res.message)
             }
@@ -119,6 +112,7 @@ export default {
         removeBatch(index) {
             if (index > 0) {
                 this.batches.splice(index, 1)
+                this.updateBatch()
             }
         },
         addBatch() {
@@ -126,10 +120,43 @@ export default {
         },
         clear() {
             this.batches = [{}]
+        },
+        change(index, batchId) {
+            for (let i in this.batches) {
+                if (this.batches[i] === batchId) {
+                    message.info("已选择该批次")
+                    return
+                }
+            }
+            for (let i in this.batchList) {
+                let batch = this.batchList[i]
+                if (batch['batchId'] === batchId) {
+                    this.batches[index] = {
+                        transactionNumber: 0,
+                        batchId: batch['batchId'],
+                        quantity: batch['quantity'],
+                        restQuantity: batch['restQuantity'],
+                        date: batch['date']
+                    }
+                    break
+                }
+            }
+            this.updateBatch()
         }
     },
     mounted() {
-        this.getBatches(this.product['id'])
+        this.getBatches(this.orderedProduct['id'])
+        this.selectedBatches = {
+            index: this.index,
+            product: {
+                id: this.orderedProduct['id'],
+                name: this.orderedProduct['name'],
+                unit: this.orderedProduct['unit']
+            },
+            price: this.orderedProduct.price,
+            batches: {}
+        }
+        this.updateBatch()
     }
 }
 </script>

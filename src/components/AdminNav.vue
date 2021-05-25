@@ -19,6 +19,12 @@
                     <span> 追溯商品</span>
                 </router-link>
             </el-menu-item>
+            <el-menu-item index="4">
+                <router-link :to="secretAndKeyPath" tag="div" slot="title">
+                    <i class="el-icon-key"></i>
+                    <span> 证书管理</span>
+                </router-link>
+            </el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -31,7 +37,8 @@ export default {
         return {
             queryOrderPath: '/admin/query-order',
             priceStaticsPath: '/admin/price-statics',
-            productTracePath: '/admin/product-trace'
+            productTracePath: '/admin/product-trace',
+            secretAndKeyPath: '/admin/secret-key',
         }
     },
     methods: {

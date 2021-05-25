@@ -1,10 +1,10 @@
 // import qs from "querystring";
 import {get, post} from "@/utils/http";
 import {ORDER, STOCK, GET_CONFIRMING_ORDER, SAVE_STOCK, MATERIAL_STOCK} from "@/utils/url";
-const {SUBMIT_NEW_PRODUCT} = require('@/utils/url')
+const {PRODUCT} = require('@/utils/url')
 
 export function submitNewProduct_api(data) {
-    let url = SUBMIT_NEW_PRODUCT
+    let url = PRODUCT
     return post(url, data)
 }
 
@@ -63,3 +63,17 @@ export function getPersonalOrders_api() {
     return get(url)
 }
 
+export function getPersonalStocks_api() {
+    let url = `${STOCK}/personal_stock`
+    return get(url)
+}
+
+export function confirmOrder_api(data) {
+    let url = `${ORDER}/confirm`
+    return post(url, data)
+}
+
+export function getProductById_api(path) {
+    let url = `${PRODUCT}/${path}`
+    return get(url)
+}

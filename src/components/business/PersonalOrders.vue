@@ -88,6 +88,9 @@
                                 prop="status"
                                 label="状态"
                                 width="100">
+                                <el-tag slot-scope="scope" :type="statusMapping[checkingOrderTable[scope.$index]['status']].type" size="small">
+                                    {{statusMapping[checkingOrderTable[scope.$index]['status']].value}}
+                                </el-tag>
                             </el-table-column>
                             <el-table-column prop="date" label="交易时间" width="150"></el-table-column>
                             <el-table-column label="操作">

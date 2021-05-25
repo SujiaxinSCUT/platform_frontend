@@ -5,7 +5,7 @@
             </el-page-header>
             <el-main>
                 <checking-order-detail v-for="(product, index) in productList" :index="index"
-                              :product="product" :key="index" @update-batch="updateBatch">
+                              :ordered-product="product" :key="index" @update-batch="updateBatch">
                 </checking-order-detail>
             </el-main>
             <el-footer>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {getOrderedProductAll} from "@/service/business";
+import {confirmOrder, getOrderedProductAll} from "@/service/business";
 import {message} from "ant-design-vue";
 import {RESULT} from "@/utils/http";
 import CheckingOrderDetail from "@/components/business/CheckingOrderDetail";
@@ -40,11 +40,16 @@ export default {
             this.$router.push('/business/my-order')
         },
         updateBatch(data) {
-            this.productList[data['index']]['batch'] = data['batch']
+            this.productList[data['index']]['batches'] = data
         },
         submit() {
             if (!this.checkBatch()) {
                 message.error("选择批次数目有误")
+            } else {
+                this.confirmOrder(true)
+                message.success("提交成功")
+                this.productList = []
+                this.goBack()
             }
         },
         checkBatch() {
@@ -52,8 +57,8 @@ export default {
             for(let i in productList) {
                 let product = productList[i]
                 let num = 0
-                for (let j in product['batch']) {
-                    num += product['batch'][j]['transactionNumber']
+                for (let j in product['batches']['batches']) {
+                    num += product['batches']['batches'][j]
                 }
                 if (product['quantity'] !== num) {
                     return false
@@ -68,10 +73,27 @@ export default {
             } else {
                 message.error(res.message)
             }
+        },
+        confirmOrder(valid) {
+            let batchesData = []
+            for (let i in this.productList) {
+                let batch = this.productList[i]['batches']
+                batchesData.push({
+                    product: batch['product'],
+                    price: batch['price'],
+                    batches: batch['batches']
+                })
+            }
+            console.log(batchesData)
+            confirmOrder(valid, this.orderId, batchesData)
+        },
+        rejectOrder() {
+            this.confirmOrder(false)
+            message.success("提交成功")
+            this.goBack()
         }
     },
     mounted() {
-        console.log(this.orderId)
         this.loadProductList()
     }
 }

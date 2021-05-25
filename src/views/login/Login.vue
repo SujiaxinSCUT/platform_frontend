@@ -4,7 +4,7 @@
             <el-form ref="ruleForm" :rules="rules" :model="ruleForm"
                      label-position="left" label-width="50px"
                      :hide-required-asterisk=true>
-                <el-image :src="logoImg" style="margin-bottom: 20px"></el-image>
+                <el-image :src="logoImg" style="margin-bottom: 10px;"></el-image>
                 <el-form-item label="账号" style="margin-right: 20px;"
                               prop="username">
                     <el-input auto-complete="off" v-model="ruleForm.username" :disabled="loading"></el-input>

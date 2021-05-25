@@ -1,8 +1,6 @@
 <template>
     <div id="AddStock">
         <el-container v-if="needAddNewProduct">
-            <el-page-header @back="goBack" content="添加商品">
-            </el-page-header>
             <el-main>
                 <div style="margin-top: 20px;">
                     <el-button type="text" @click="changeType" size="mini">找不到商品信息？</el-button>
@@ -66,7 +64,6 @@
                 </div>
             </el-main>
             <el-footer>
-                <el-button type="primary" @click="goBack" :loading="loading">返回</el-button>
                 <el-button type="primary" @click="submitForm('form')" :loading="loading">提交</el-button>
             </el-footer>
         </el-container>
@@ -173,7 +170,6 @@ export default {
                 }
                 this.saveStock(res.data, batchList, this.form.name, this.form.unit)
                 this.clear()
-                this.goBack()
             } else {
                 message.error(res.message)
             }
@@ -199,14 +195,18 @@ export default {
         handleQuantityChange(value) {
             this.form.quantity = value
         },
-        goBack() {
-            this.$router.push('/business/my-product')
-        },
         changeType() {
             this.needAddNewProduct = !this.needAddNewProduct
         },
         clear() {
             this.$refs['form'].resetFields()
+            this.form = {
+                product: '',
+                name: '',
+                unit: '',
+                quantity: 0,
+                price: 0,
+            }
             this.currentProduct = null
         },
         getBatches(batches) {

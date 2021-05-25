@@ -9,7 +9,12 @@ import {
     getOrderedProductAll_api,
     getProductInStock_api,
     saveStock_api,
-    getMaterial_api, getStockPageable_api, getPersonalOrders_api
+    getMaterial_api,
+    getStockPageable_api,
+    getPersonalOrders_api,
+    getPersonalStocks_api,
+    confirmOrder_api,
+    getProductById_api
 } from "@/api/business";
 import {userDetailsStorage} from "@/utils/request";
 import {router} from "@/router/router";
@@ -628,6 +633,137 @@ export async function getPersonalOrders() {
     } else if (res.response){
         code = RESULT.FAILED
         message = "获取订单信息失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function getPersonalStock() {
+    let userDetails = getUserDetails()
+    if (!userDetails) {
+        return {
+            code: RESULT.FAILED,
+            message: '登录过期',
+            data: null
+        }
+    }
+    const res = await getPersonalStocks_api()
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+        } else {
+            code = RESULT.FAILED
+            message = "获取库存信息失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取库存信息失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function confirmOrder(valid, orderId, selectedBatchesList) {
+    let userDetails = getUserDetails()
+    if (!userDetails) {
+        return {
+            code: RESULT.FAILED,
+            message: '登录过期',
+            data: null
+        }
+    }
+    let clientKey = localStorage.getItem("keyFileOf" + userDetails['name'])
+    let clientCrt = localStorage.getItem("crtFileOf" + userDetails['name'])
+    if (!clientKey || clientKey.replace(/^\s+|\s+$/g,"") == '') {
+        router.push('/business/secret-key')
+        return {
+            code: RESULT.FAILED,
+            message: '未上传密钥',
+            data: null
+        }
+    }
+    if (!clientCrt || clientCrt.replace(/^\s+|\s+$/g,"") == '') {
+        router.push('/business/secret-key')
+        return {
+            code: RESULT.FAILED,
+            message: '未上传证书',
+            data: null
+        }
+    }
+    let data = {
+        valid: valid,
+        orderId: orderId,
+        selectedBatchesList: selectedBatchesList,
+        clientKey: clientKey,
+        clientCrt: clientCrt
+    }
+    const res = await confirmOrder_api(data)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+        } else {
+            code = RESULT.FAILED
+            message = "获取库存信息失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取库存信息失败"
+    } else {
+        code = RESULT.FAILED
+        message = "网络出错，请稍后再试"
+    }
+    return {
+        code: code,
+        message: message,
+        data: res_data
+    }
+}
+
+export async function getProductById(id) {
+    let userDetails = getUserDetails()
+    if (!userDetails) {
+        return {
+            code: RESULT.FAILED,
+            message: '登录过期',
+            data: null
+        }
+    }
+    let path = 'id/' + id
+    const res = await getProductById_api(path)
+    let code
+    let message
+    let res_data
+    if (res.status) {
+        if (res.status === HTTP.OK) {
+            code = RESULT.SUCCESS
+            res_data = res.data
+        } else {
+            code = RESULT.FAILED
+            message = "获取交易商品信息失败"
+        }
+    } else if (res.response){
+        code = RESULT.FAILED
+        message = "获取交易商品信息失败"
     } else {
         code = RESULT.FAILED
         message = "网络出错，请稍后再试"
