@@ -10,13 +10,13 @@
                 <el-button type="primary" @click="submitForm('form')" :loading="loading">查询</el-button>
             </el-form>
             <el-divider></el-divider>
-            <el-table :data="tableData" style="width: 800px">
+            <el-table :data="tableData" style="width: 800px" height="350px">
                 <el-table-column prop="id" label="订单号"></el-table-column>
                 <el-table-column prop="date" label="交易时间"></el-table-column>
                 <el-table-column label="订单状态">
-                    <span slot-scope="scope">
-                        {{statusMapping[tableData[scope.$index]['status']]}}
-                    </span>
+                    <el-tag slot-scope="scope" :type="statusMapping[tableData[scope.$index]['status']].type" size="small">
+                        {{statusMapping[tableData[scope.$index]['status']].value}}
+                    </el-tag>
                 </el-table-column>
                 <el-table-column label="订单类型">
                     <span slot-scope="scope">

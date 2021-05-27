@@ -1,6 +1,8 @@
 <template>
     <div id="AddStock">
         <el-container v-if="needAddNewProduct">
+            <el-page-header @back="goBack" content="添加商品">
+            </el-page-header>
             <el-main>
                 <div style="margin-top: 20px;">
                     <el-button type="text" @click="changeType" size="mini">找不到商品信息？</el-button>
@@ -118,6 +120,9 @@ export default {
         }
     },
     methods: {
+        goBack() {
+            this.$router.push('/business/my-product')
+        },
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -165,6 +170,7 @@ export default {
                     }
                     batchList.push({
                         productName: batchesAndNum[0]['productName'],
+                        productId: batchesAndNum[0]['productId'],
                         batchesNumMap: batchesForm
                     })
                 }

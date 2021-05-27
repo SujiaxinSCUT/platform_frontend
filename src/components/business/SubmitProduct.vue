@@ -160,6 +160,7 @@ export default {
                     }
                     batchList.push({
                         productName: batchesAndNum[0]['productName'],
+                        productId: batchesAndNum[0]['productId'],
                         batchesNumMap: batchesForm
                     })
                 }

@@ -17,15 +17,24 @@ export default {
                 let node = network['nodes'][i]
                 let label = ''
                 if (node['order']) {
-                    color = 'white'
-                    label = `订单\n供货商：\t${node['supplierName']}\n客户：\t${node['clientName']}\n数量：\t${node['quantity']}\n`
+                    let orderLabel = "订单\n\n"
+                    let supplierLabel = `供货商：\t${node['supplierName']}\n`
+                    let clientLabel = `客户：\t${node['clientName']}\n`
+                    let quantityLabel = `数量：\t${node['quantity']}\n`
+                    let proNameLabel = `商品名称：\t${node['productName']}\n`
+                    let batchIdLabel = `批次号：\t${node['batchId'].substring(0, 8)}\n${node['batchId'].substring(8, 24)}\n`
+                    label = orderLabel + supplierLabel + clientLabel + quantityLabel + proNameLabel + batchIdLabel
                 } else {
-                    label = `库存\n持有商户：\t${node['owner']}\n进货日期：\t${node['date'].substring(0, 10)}\n`
+                    let stockLabel = "库存\n\n"
+                    let userLabel = `持有商户：\t${node['owner']}\n`
+                    let dateLabel = `进货日期：\t${node['date'].substring(0, 10)}\n`
+                    let proNameLabel = `商品名称：\t${node['productName']}\n`
+                    let batchIdLabel = `批次号：\t${node['batchId'].substring(0, 8)}\n${node['batchId'].substring(8, 24)}\n`
+                    label = stockLabel + userLabel + dateLabel + proNameLabel + batchIdLabel
                 }
                 nodeArray.push({
                     id: node['id'],
                     label: label,
-                    color: color
                 })
             }
             var nodes = new DataSet(nodeArray)
@@ -42,7 +51,7 @@ export default {
                 //节点样式
                 nodes: {
                     shape: "box",//设置节点node样式为矩形
-                    fixed:true,//节点node固定不可移动
+                    fixed:false,//节点node固定不可移动
                     font: {
                         color: "black", //字体的颜色
                         size: 16 //显示字体大小
@@ -50,7 +59,8 @@ export default {
                     scaling: {
                         min: 16,
                         max: 32 //缩放效果比例
-                    }
+                    },
+                    labelHighlightBold: false
                 },
                 //连接线的样式
                 edges: {
@@ -72,7 +82,7 @@ export default {
                     hierarchical: {
                         direction: "LR",//分层排序方向
                         sortMethod: "directed",//分层排序方法
-                        levelSeparation:400//不同级别之间的距离
+                        levelSeparation:300//不同级别之间的距离
                     },
                 },
                 interaction: {

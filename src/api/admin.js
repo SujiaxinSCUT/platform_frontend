@@ -10,3 +10,8 @@ export function traceProduct_api(data) {
     let url = ORDERS_ADMIN + '/trace'
     return post(url, data)
 }
+
+export function getAvgPrice_api(path) {
+    let url = ORDERS_ADMIN + '/' + path
+    return get(url)
+}

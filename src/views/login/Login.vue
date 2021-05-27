@@ -1,11 +1,12 @@
 <template>
-    <div id="login" style="width: 100%; height: 100%;">
+    <div id="login" style="width: 100%; height: 100%;background-color: azure;">
         <el-card class="box-card">
             <el-form ref="ruleForm" :rules="rules" :model="ruleForm"
                      label-position="left" label-width="50px"
                      :hide-required-asterisk=true>
-                <el-image :src="logoImg" style="margin-bottom: 10px;"></el-image>
-                <el-form-item label="账号" style="margin-right: 20px;"
+<!--                <el-image :src="logoImg" style="margin-bottom: 10px;"></el-image>-->
+                <span style="font-weight: bold;font-size: 20px;">商品追溯监管系统</span>
+                <el-form-item label="账号" style="margin-right: 20px;margin-top: 20px;"
                               prop="username">
                     <el-input auto-complete="off" v-model="ruleForm.username" :disabled="loading"></el-input>
                 </el-form-item>

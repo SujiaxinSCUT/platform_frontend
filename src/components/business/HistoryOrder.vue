@@ -114,16 +114,18 @@ export default {
                 let data = res.data['contents']
                 this.totalElements = res.data['totalElements']
                 this.tableData = []
+                console.log(data)
                 for (let i in data) {
                     let item = data[i]
                     this.tableData.push({
                         orderId: item['id'],
-                        username: data.sales_order ? item['clientName'] : item['supplierName'],
+                        username: this.type === "1" ? item['clientName'] : item['supplierName'],
                         date: item['date'],
                         status: item['status'],
-                        type: data.sales_order ? "销售订单" : "进货订单"
+                        type: this.type === "1" ? "销售订单" : "进货订单"
                     })
                 }
+                console.log(this.tableData)
             } else {
                 message.error(res.message)
             }

@@ -25,4 +25,5 @@ export default {
 /*    background-color: azure;*/
 /*    height: 100%;*/
 /*}*/
+
 </style>
