@@ -15,11 +15,13 @@ import ProductDetails from "@/components/business/ProductDetails";
 import UploadView from "@/components/UploadView";
 import PersonalOrders from "@/components/business/PersonalOrders";
 import PersonalProducts from "@/components/business/PersonalProducts";
+import OrderDetail from "@/components/OrderDetail";
 
 
 
 const routes = [
     {path: '/', meta: {requireAuth: true}},
+    {path: '/order-detail', component: OrderDetail},
     {path: '/login', component: Login},
     {
         path: '/business',
